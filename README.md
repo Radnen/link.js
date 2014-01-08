@@ -1,5 +1,5 @@
-link
-====
+link.js
+=======
 
 Link.js is a very fast general-purpose functional programming library.
 
@@ -10,6 +10,8 @@ a large speed boost and a shallow memory footprint.
 How does Link.js compare to other similar libraries? Well... how does 7 times faster sound?
 It also has some built-in optimizations that leverage your work to try and do two things
 at once so-to-speak.
+
+Link is still a work in progress. It's API is already mostly usable, even commercially.
 
 How it Works
 ============
@@ -40,18 +42,18 @@ favorite functional logic libraries.
 Chainable:
 ----------
 
-	These can be linked up like a chain,
-	ex: `Link(array).map(add).filter(even).first().toArray();`
-	
-	- take(n)     - take the first n results.
-	- first(|fn)  - take first satisfying item, or if no function, the very first item.
-	- map(fn)     - perform a map operation with fn.
-	- filter(fn)  - perform a filter, using fn as the predicate.
-	- reject(fn)  - perform the opposite of filter.
-	- get(num)    - tries to get the indexed item.
-	- uniq()      - filters the results to only unique items.
-	- zip(array)  - combines the contents of the array with the current elements.
-	- slice(a, b) - returns results between [a, b).
+These can be linked up like a chain,
+ex: `Link(array).map(add).filter(even).first().toArray();`
+
+- take(n)     - take the first n results.
+- first(|fn)  - take first satisfying item, or if no function, the very first item.
+- map(fn)     - perform a map operation with fn.
+- filter(fn)  - perform a filter, using fn as the predicate.
+- reject(fn)  - perform the opposite of filter.
+- get(num)    - tries to get the indexed item.
+- uniq()      - filters the results to only unique items.
+- zip(array)  - combines the contents of the array with the current elements.
+- slice(a, b) - returns results between [a, b).
 
 Non-Chainable:
 --------------
