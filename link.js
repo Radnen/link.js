@@ -1,7 +1,7 @@
 /**
 * Script: link.js
-* Written by: Andrew Helenius
-* Updated: 1/7/2014
+* Written by: Radnen
+* Updated: 1/9/2014
 **/
 
 /***********
@@ -13,15 +13,16 @@ chainable:
 	These can be linked up like a chain,
 	ex: Link(array).map(add).filter(even).first().toArray();
 	
-	- take(n)     - take the first n results.
-	- first(|fn)  - take first satisfying item, or if no function, the very first item.
-	- map(fn)     - perform a map operation with fn.
-	- filter(fn)  - perform a filter, using fn as the predicate.
-	- reject(fn)  - perform the opposite of filter.
-	- get(num)    - tries to get the indexed item.
-	- uniq()      - filters the results to only unique items.
-	- zip(array)  - combines the contents of the array with the current elements.
-	- slice(a, b) - returns results between [a, b).
+	- take(n)               - take the first n results.
+	- first(|fn)            - take first satisfying item, or if no function, the very first item.
+	- map(fn)               - perform a map operation with fn.
+	- filter(fn)            - perform a filter, using fn as the predicate.
+	- filterBy(name, value) - filters out objects whose named property does not match the value.
+	- reject(fn)            - perform the opposite of filter.
+	- get(num)              - tries to get the indexed item.
+	- uniq()                - filters the results to only unique items.
+	- zip(array)            - combines the contents of the array with the current elements.
+	- slice(a, b)           - returns results between [a, b).
 
 non-chainable:
 	These are non-chainable since they must perform the query first,
@@ -66,6 +67,11 @@ var Link = (function() {
 			this.exec = function(item) { if (!where(item)) this.next.exec(item); }
 		else
 			this.exec = function(item) { if (where(item)) this.next.exec(item); }
+	}
+	
+	function FilterByPoint(key, value) {
+		var k = key, v = value;
+		this.exec = function(item) { if (item[k] == v) this.next.exec(item); }
 	}
 
 	function MapPoint(fn)
@@ -192,7 +198,7 @@ var Link = (function() {
 		this.getValue = function() { var v = value; value = 0; return v; }
 	}
 	
-	function InvokePoint(method, ctxt) {
+	function InvokePoint(method, context) {
 		var name = method, ctxt = context;
 		if (method) {
 			if (context)
@@ -263,13 +269,21 @@ var Link = (function() {
 	
 	var array, root, end, prev;
 
-	/** Functional Layer **/
-	
+	function From(a) {
+		Env.stop = false;
+		Env.take = false;
+		array = a;
+		root = { next: null };
+		end = root;
+	}
+
 	function PushPoint(point) {
 		prev = end;
 		end.next = point;
 		end = point;
 	}
+
+	/** Functional Layer **/
 	
 	function Each(fn) {
 		this.run(new EachPoint(fn));
@@ -279,7 +293,7 @@ var Link = (function() {
 	
 	function Run(point) {
 		Env.stop = false;
-		if (point) this.pushPoint(point);
+		if (point) PushPoint(point);
 		var a = array, l = a.length, i = 0, r = root.next, e = Env;
 		if (e.take)
 			while (i < l && !e.stop) r.exec(a[i++]);
@@ -327,6 +341,11 @@ var Link = (function() {
 		return point.getGroup();
 	}
 	
+	function FilterBy(key, value) {
+		PushPoint(new FilterByPoint(key, value));
+		return this;
+	}
+	
 	function Every(fn) {
 		Env.take = true;
 		var point = new EveryPoint(fn);
@@ -343,19 +362,10 @@ var Link = (function() {
 	function Sample(num) {
 		if (!num) num = 1;
 		Env.take = true;
-		this.pushPoint(new SamplePoint(num));
+		PushPoint(new SamplePoint(num));
 		return this;
 	}
-	
-	function From(a) {
-		Env.stop = false;
-		Env.take = false;
-		array = a;
-		root = { next: null };
-		end = root;
-		return this;
-	}
-	
+		
 	function Where(func) {
 		if (end instanceof WherePoint) {
 			var e = new Where2Point(end.func, func);
@@ -368,7 +378,7 @@ var Link = (function() {
 			end = e;
 		}
 		else
-			this.pushPoint(new WherePoint(func));
+			PushPoint(new WherePoint(func));
 		return this;
 	}
 	
@@ -384,7 +394,7 @@ var Link = (function() {
 			end = e;
 		}
 		else
-			this.pushPoint(new WherePoint(func, true));
+			PushPoint(new WherePoint(func, true));
 		return this;
 	}
 	
@@ -400,7 +410,7 @@ var Link = (function() {
 			end = e;
 		}
 		else
-			this.pushPoint(new MapPoint(func));
+			PushPoint(new MapPoint(func));
 		return this;
 	}
 	
@@ -417,18 +427,17 @@ var Link = (function() {
 	}
 	
 	function Invoke(name, context) {
-		this.pushPoint(new InvokePoint(name, context));
-		return this;
+		this.run(new InvokePoint(name, context));
 	}
 	
 	function First(fn) {
 		Env.take = true;
-		this.pushPoint(new FirstPoint(fn));
+		PushPoint(new FirstPoint(fn));
 		return this;
 	}
 	
 	function Zip(array) {
-		this.pushPoint(new ZipPoint(array));
+		PushPoint(new ZipPoint(array));
 		return this;
 	}
 	
@@ -436,7 +445,7 @@ var Link = (function() {
 		if (a == 0) return this;
 		Env.take = true;
 		if (!b) b = Number.MAX_VALUE;
-		this.pushPoint(new SlicePoint(a, b));
+		PushPoint(new SlicePoint(a, b));
 		return this;
 	}
 	
@@ -459,7 +468,7 @@ var Link = (function() {
 	
 	function Take(n) {
 		Env.take = true;
-		this.pushPoint(new TakePoint(n));
+		PushPoint(new TakePoint(n));
 		return this;
 	}
 	
@@ -467,14 +476,14 @@ var Link = (function() {
 		Env.take = true;
 		if (num < 0) Env.stop = true;
 		else if (num == 0)
-			this.pushPoint(new FirstPoint());
+			PushPoint(new FirstPoint());
 		else
-			this.pushPoint(new GetPoint(num));
+			PushPoint(new GetPoint(num));
 		return this;
 	}
 	
 	function Uniq() {
-		this.pushPoint(new UniqPoint());
+		PushPoint(new UniqPoint());
 		return this;
 	}
 	
@@ -490,12 +499,13 @@ var Link = (function() {
 		if (arr !== undefined) From(arr);
 		
 		return {
-			from: From,
 			pushPoint: PushPoint,
 			each: Each,
 			run: Run,
 			where: Where,
 			filter: Where,
+			filterBy: FilterBy,
+			whereBy: FilterBy,
 			reject: Reject,
 			map: Map,
 			first: First,
