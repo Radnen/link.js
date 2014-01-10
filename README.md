@@ -3,22 +3,26 @@ link.js
 
 Link.js is a very fast general-purpose functional programming library.
 
-Link uses Lazy execution (also called deferred execution) to produce it's results.
+Link uses Lazy execution (also called deferred execution) to produce its results.
 That means things aren't being calculated until only when you need them. This offers
 a large speed boost and a shallow memory footprint.
 
-How does Link.js compare to other similar libraries? Well... how does 7 times faster sound?
+How does Link.js compare to other similar libraries? Depending on the query asked, it can be up to 7 times faster.
+
+* tests coming soon *
+
 It also has some built-in optimizations that leverage your work to try and do two things
-at once so-to-speak.
+at once so-to-speak (see: how it works).
 
 Link is still a work in progress. It's API is already mostly usable, even commercially.
 
 How it Works
 ============
 
-Link creates an abstract syntax tree and runs an interpreter on it. It could just create
-the underlying for loop logic and run eval(), but eval is a nasty, evil construct. So, it
-just interprets the chain. Values that survive to the end only ever get executed.
+Link creates an abstract syntax tree (more like a chain than a tree) and runs an interpreter on it. The syntax in
+question are methods like map, filter and each - those that do work to the underlying data. Each node in this
+tree/chain whether it is a map node or a filter node, have an exec() method that does the work. The chain has the
+ability to return early and the ability to go forward when needed. This also reduces overall memory usage.
 
 It has an optimizer:
 
@@ -32,7 +36,10 @@ turns into a different expression behind-the-scenes:
 var results = Link(array).map2(add, timesten).wheremap(even, add).toArray()
 ```
 
-which turns out to greatly impact the overall execution speed of the library.
+Which turns out to greatly impact the overall execution speed of the library. Presently it knows to do this only
+on a few operations (map and filter/where), but in time will grow as needed. The optimizer also takes some time to
+work. The optimizer is ran while the chain is built. It is not a thing that runs on its own before the chain is
+executed.
 
 Features
 ========
