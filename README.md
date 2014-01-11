@@ -8,7 +8,8 @@ That means things aren't being calculated until only when you need them. This of
 a large speed boost and a shallow memory footprint.
 
 How does Link.js compare to similar libraries? See /benchmark for tests. It is already much
-faster than Lazy and Lo-Dash, which are the two main libraries tested against.
+faster than Lazy and Lo-Dash, which are the two main libraries tested against. You can run the
+benchmarks yourself by visiting: http://radnen.tengudev.com/link-benchmark/
 
 It also has some built-in optimizations that leverage your work to try and do two things
 at once so-to-speak (see: how it works).
