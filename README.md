@@ -7,14 +7,13 @@ Link uses Lazy execution (also called deferred execution) to produce its results
 That means things aren't being calculated until only when you need them. This offers
 a large speed boost and a shallow memory footprint.
 
-How does Link.js compare to other similar libraries? Depending on the query asked, it can be up to 7 times faster.
-
-* tests coming soon *
+How does Link.js compare to similar libraries? See /benchmark for tests. It is already much
+faster than Lazy and Lo-Dash, which are the two main libraries tested against.
 
 It also has some built-in optimizations that leverage your work to try and do two things
 at once so-to-speak (see: how it works).
 
-Link is still a work in progress. It's API is already mostly usable, even commercially.
+Link is still a work in progress. It's API is already mostly usable, but still under construction.
 
 How it Works
 ============
@@ -39,7 +38,8 @@ var results = Link(array).map2(add, timesten).wheremap(even, add).toArray()
 Which turns out to greatly impact the overall execution speed of the library. Presently it knows to do this only
 on a few operations (map and filter/where), but in time will grow as needed. The optimizer also takes some time to
 work. The optimizer is ran while the chain is built. It is not a thing that runs on its own before the chain is
-executed.
+executed. The time it takes to create the chain severely reduces it's execution speed in a loop, so I suggest to
+create the chain outside of intense loops to maximize performance. (See: /benchmark for details.)
 
 Features
 ========
@@ -96,3 +96,11 @@ var results = Link(Link(array).where(even).sample(5)).map(timesten).each(print);
 - sample(num) - selects a random element, up to num of them or once.
 - sort(fn) - sorts the resulting list with given function, or uses JS default.
 - groupBy(fn) - returns an array of values grouped by the grouping function.
+
+Planned Features
+================
+
+- Make Link return a link object. A chain you can keep around and do work with later.
+- Add more features common to Lazy/Underscore
+- Make it web friendlier (Node support, etc).
+- Find ways of creating a light-weight non-optimized version.

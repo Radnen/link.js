@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	<script type="text/javascript" src="benchmark.js"></script>
+	<script type="text/javascript" src="link.js"></script>
+	<script type="text/javascript" src="lazy.js"></script>
+	<script type="text/javascript" src="lodash.js"></script>
+	</head>
+	<body>
+		<script>
+			function even(n) { return n % 2 == 0; }
+			function three(n) { return n % 3 == 0; }
+			function add1(n) { return n + 1; }
+			function div3(n) { return n / 3; }
+			function isInt(n) { return Math.floor(n) == n; }
+			function asc(a, b) { return a - b; }
+			function noop() { };
+			function toArray(a, b) { a.push(b); return a; };
+
+			var array = Lazy.range(100).toArray(), link, lazy;
+			
+			link = Link(array).map(add1).filter(even).map(add1);
+			lazy = Lazy(array).map(add1).filter(even).map(add1);
+			
+			var suite = new Benchmark.Suite;
+			suite.add("Link map-filter-map-each", function() {
+				link.each(noop);
+			})
+			.add("Lazy map-filter-map-each", function() {
+				lazy.each(noop);
+			})
+			.add("Lo-Dash map-filter-map-each", function() {
+				_.chain(array).map(add1).filter(even).map(add1).each(noop);
+			})
+			.on("cycle", function(event) {
+				console.log(String(event.target));
+			})
+			.on("complete", function() {
+				console.log('Fastest is ' + this.filter('fastest').pluck('name'));
+			})
+			.run();
+
+			link = Link(array).filter(even);
+			link = Lazy(array).filter(even);
+
+			var suite2 = new Benchmark.Suite;
+			suite2.add("Link filter-indexOf", function() {
+				link.indexOf(88);
+			})
+			.add("Lazy filter-indexOf", function() {
+				lazy.indexOf(88);
+			})
+			.add("Lo-Dash filter-indexOf", function() {
+				_.chain(array).filter(even).indexOf(88);
+			})
+			.on("cycle", function(event) {
+				console.log(String(event.target));
+			})
+			.on("complete", function() {
+				console.log('Fastest is ' + this.filter('fastest').pluck('name'));
+			})
+			.run();
+			
+		</script>
+	</body>
+</html>
