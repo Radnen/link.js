@@ -87,6 +87,7 @@ var results = Link(Link(array).where(even).sample(5)).map(timesten).each(print);
 - contains(o|p) - returns true if something satisfies the predicate or matches the object.
 - some(o|p) - returns true if something satisfies the predicate or matches the object.
 - indexOf(o) - returns -1 if item not found, or the index.
+- indexOf(o|p[,v]) - returns -1 if item not found, or the index. Compares an object, a key and value, or uses a predicate.
 - every(fn) - checks to see if all items satisfy the predicate.
 - reduce(fn, memo) - reduces the results, starting at memo, or if not, the first item.
 - length() - returns the overall length.

@@ -1,7 +1,7 @@
 /**
 * Script: link.js
 * Written by: Radnen
-* Updated: 1/9/2014
+* Updated: 1/10/2014
 **/
 
 /***********
@@ -179,10 +179,17 @@ var Link = (function() {
 		this.exec = function(item) { if (!func(item)) { this.pass = false; Env.stop = true; } };
 	}
 
-	function IndexOfPoint(o) {
-		var obj = o, idx = -1, i = 0;
-		this.exec = function(item) { idx++; if (item == obj) { i = idx; Env.stop = true; } };
-		this.getIdx = function() { var v = idx != i ? -1 : i; i = idx = -1; return v; };
+	function IndexOfPoint(obj, value) {
+		var o = obj, v = value, idx = -1, i = 0;
+		
+		if (typeof o == "function")
+			this.exec = function(item) { idx++; if (o(item)) { i = idx; Env.stop = true; } };
+		else if (v !== undefined)
+			this.exec = function(item) { idx++; if (item[o] == v) { i = idx; Env.stop = true; } };
+		else
+			this.exec = function(item) { idx++; if (item == o) { i = idx; Env.stop = true; } };
+			
+		this.getIdx = function() { var v = idx != i ? -1 : i; i = 0; idx = -1; return v; };
 	}
 
 	function EachPoint(fn) {
@@ -328,9 +335,9 @@ var Link = (function() {
 		return point.pass;
 	}
 	
-	function IndexOf(o) {
+	function IndexOf(o, v) {
 		Env.take = true;
-		var point = new IndexOfPoint(o);
+		var point = new IndexOfPoint(o, v);
 		this.run(point);
 		return point.getIdx();
 	}
