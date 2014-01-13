@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-	<script type="text/javascript" src="benchmark.js"></script>
+	<script type="text/javascript" src="suite.js"></script>
 	<script type="text/javascript" src="link.js"></script>
 	<script type="text/javascript" src="lazy.js"></script>
 	<script type="text/javascript" src="lodash.js"></script>
@@ -14,14 +14,13 @@
 			function asc(a, b) { return a - b; }
 			function noop() { };
 			function toArray(a, b) { a.push(b); return a; };
+			
+			function run1() {
+				var array = Lazy.range(100000).toArray();
+				var lazy = Lazy(array).map(add1).filter(even).map(add1);
+				var link = Link(array).map(add1).filter(even).map(add1);
 
-			function run() {
-				var array = Lazy.range(100).toArray(), link, lazy;
-				
-				link = Link(array).map(add1).filter(even).map(add1);
-				lazy = Lazy(array).map(add1).filter(even).map(add1);
-				
-				var suite = new Benchmark.Suite;
+				var suite = new Suite;
 				suite.add("Link map-filter-map-each", function() {
 					link.each(noop);
 				})
@@ -35,15 +34,18 @@
 					console.log(String(event.target));
 				})
 				.on("complete", function() {
-					console.log('Fastest is ' + this.filter('fastest').pluck('name'));
+					console.log('Fastest is ' + this.getFastest());
 				})
 				.run();
+			}
 
-				link = Link(array).filter(even);
-				link = Lazy(array).filter(even);
+			function run2() {
+				var array = Lazy.range(100000).toArray();
+				var link = Link(array).filter(even);
+				var lazy = Lazy(array).filter(even);
 
-				var suite2 = new Benchmark.Suite;
-				suite2.add("Link filter-indexOf", function() {
+				var suite = new Suite;
+				suite.add("Link filter-indexOf", function() {
 					link.indexOf(88);
 				})
 				.add("Lazy filter-indexOf", function() {
@@ -56,19 +58,90 @@
 					console.log(String(event.target));
 				})
 				.on("complete", function() {
-					console.log('Fastest is ' + this.filter('fastest').pluck('name'));
+					console.log('Fastest is ' + this.getFastest());
+				})
+				.run();
+			}
+			
+			function run3() {
+				var array = Lazy.range(100000).toArray();
+				var link = Link(array).filter(even);
+				var lazy = Lazy(array).filter(even);
+
+				var suite = new Suite;
+				suite.add("Link filter-toArray", function() {
+					link.toArray();
+				})
+				.add("Lazy filter-toArray", function() {
+					lazy.toArray();
+				})
+				.on("cycle", function(event) {
+					console.log(String(event.target));
+				})
+				.on("complete", function() {
+					console.log('Fastest is ' + this.getFastest());
+				})
+				.run();
+			}
+			
+			function run4() {
+				var array = Lazy.range(100000).toArray();
+				var link = Link(array).filter(even);
+				var lazy = Lazy(array).filter(even);
+
+				var suite = new Suite;
+				suite.add("Link filter-each", function() {
+					link.each(noop);
+				})
+				.add("Lazy filter-each", function() {
+					lazy.each(noop);
+				})
+				.add("Lo-Dash filter-each", function() {
+					_.chain(array).filter(even).each(noop);
+				})
+				.on("cycle", function(event) {
+					console.log(String(event.target));
+				})
+				.on("complete", function() {
+					console.log('Fastest is ' + this.getFastest());
+				})
+				.run();
+			}
+			
+			function run5() {
+				var array = Lazy.range(100000).toArray();
+				var link = Link(array).filter(even).map(add1);
+				var lazy = Lazy(array).filter(even).map(add1);
+
+				var suite = new Suite;
+				suite.add("Link filter-map-each", function() {
+					link.each(noop);
+				})
+				.add("Lazy filter-map-each", function() {
+					lazy.each(noop);
+				})
+				.add("Lo-Dash filter-map-each", function() {
+					_.chain(array).filter(even).map(add1).each(noop);
+				})
+				.on("cycle", function(event) {
+					console.log(String(event.target));
+				})
+				.on("complete", function() {
+					console.log('Fastest is ' + this.getFastest());
 				})
 				.run();
 			}
 		</script>
 	</head>
 	<body>
-		<p>Check the console log for details.</p>
+		<p>Make sure the console is open to see the results!</p>
 		<p>Benchmarking against Link, Lazy and Lo-Dash, on:</p>
 		<ul>
-			<li>map()-filter()-map()-each()</li>
-			<li>filter()-indexOf()</li>
+			<li>map-filter-map-each <button onclick="run1();">Run Test</button></li>
+			<li>filter-indexOf <button onclick="run2();">Run Test</button></li>
+			<li>filter-map-each <button onclick="run5();">Run Test</button></li>
+			<li>filter-each <button onclick="run4();">Run Test</button></li>
+			<li>filter-toArray <button onclick="run3();">Run Test</button></li>
 		</ul>
-		<button onclick="run();">Run Tests</button>
 	</body>
 </html>

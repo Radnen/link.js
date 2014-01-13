@@ -102,7 +102,5 @@ var results = Link(Link(array).where(even).sample(5)).map(timesten).each(print);
 Planned Features
 ================
 
-- Make Link return a link object. A chain you can keep around and do work with later.
 - Add more features common to Lazy/Underscore
 - Make it web friendlier (Node support, etc).
-- Find ways of creating a light-weight non-optimized version.
