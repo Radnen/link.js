@@ -1,6 +1,8 @@
 link.js
 =======
 
+Version: 0.2.1
+
 Link.js is a very fast general-purpose functional programming library.
 
 Link uses Lazy execution (also called deferred execution) to produce its results.
@@ -19,9 +21,9 @@ Link is still a work in progress. It's API is already mostly usable, but still u
 How it Works
 ============
 
-Link creates an abstract syntax tree (more like a chain than a tree) and runs an interpreter on it. The syntax in
-question are methods like map, filter and each - those that do work to the underlying data. Each node in this
-tree/chain whether it is a map node or a filter node, have an exec() method that does the work. The chain has the
+Link creates an abstract syntax list and only when you make it do work does it interpret that list. The syntax in
+question are methods like map, filter, and each - those that do work to the underlying data. Each node in this
+chain whether it is a map node or a filter node, have an exec() method that does the work. The chain has the
 ability to return early and the ability to go forward when needed. This also reduces overall memory usage.
 
 It has an optimizer:
@@ -39,16 +41,20 @@ var results = Link(array).map2(add, timesten).wheremap(even, add).toArray()
 Which turns out to greatly impact the overall execution speed of the library. Presently it knows to do this only
 on a few operations (map and filter/where), but in time will grow as needed. The optimizer also takes some time to
 work. The optimizer is ran while the chain is built. It is not a thing that runs on its own before the chain is
-executed. The time it takes to create the chain severely reduces it's execution speed in a loop, so I suggest to
+executed. The time it takes to create the chain somewhat reduces it's execution speed in a loop, so I suggest to
 create the chain outside of intense loops to maximize performance. (See: /benchmark for details.)
+
+It further gets a speed increase on nodes that have a run() method on them. If it does, it'll 'kickstart' the
+query and produce results faster by "inlining" it's own operations. This is very noticeable on queries that
+start with filter() or map(). But there is a caveat: it is time consuming on my end to write these cases in.
+I'll need to study how I can automatically generate these runners as needed, presently there are only a few.
 
 Features
 ========
 
-Link supports many features common to libraries similar to it.
-This part is still under construction. Expect the ones listed here to work well enough,
-especially  the popular ones. Many of them have several names. Where and Filter do the same
-thing as does Unique and Uniq. So it can be close to a drop-in replacement of your other
+Link supports many features common to libraries similar to it. This part is still under construction. Expect the
+ones listed here to work well enough, especially  the popular ones. Many of them have several names. Where and
+Filter do the same thing as does Unique and Uniq. So it can be close to a drop-in replacement of your other
 favorite functional logic libraries.
 
 Chainable:
@@ -103,4 +109,5 @@ Planned Features
 ================
 
 - Add more features common to Lazy/Underscore
-- Make it web friendlier (Node support, etc).
+- Find a decent way to generate 'runners'
+- Make it web friendlier (Node support, etc)
