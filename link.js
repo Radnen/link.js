@@ -1,11 +1,11 @@
 /**
 * Script: link.js
 * Written by: Radnen
-* Updated: 1/13/2014
+* Updated: 1/14/2014
 **/
 
 /**************
-	VERSION 0.2.1
+	VERSION 0.2.2
 	
 	Link.js is a very fast general-purpose functional programming library.
 	Still highly experimental, and still under construction.
@@ -14,16 +14,16 @@ chainable:
 	These can be linked up like a chain,
 	ex: Link(array).map(add).filter(even).first().toArray();
 	
-	- take(n)               - take the first n results.
-	- first(|fn)            - take first satisfying item, or if no function, the very first item.
-	- map(fn)               - perform a map operation with fn.
-	- filter(fn)            - perform a filter, using fn as the predicate.
-	- filterBy(name, value) - filters out objects whose named property does not match the value.
-	- reject(fn)            - perform the opposite of filter.
-	- get(num)              - tries to get the indexed item.
-	- uniq()                - filters the results to only unique items.
-	- zip(array)            - combines the contents of the array with the current elements.
-	- slice(a, b)           - returns results between [a, b).
+	- take(n)           - takes the first n results.
+	- first(c)          - takes the first c items.
+	- map(fn)           - perform a map operation with fn.
+	- filter(fn)        - perform a filter, using fn as the predicate.
+	- filterBy(name, v) - filters out objects whose named property does not match the value.
+	- reject(fn)        - perform the opposite of filter.
+	- get(num)          - tries to get the indexed item.
+	- uniq()            - filters the results to only unique items.
+	- zip(array)        - combines the contents of the array with the current elements.
+	- slice(a, b)       - returns results between [a, b).
 
 non-chainable:
 	These are non-chainable since they must perform the query first,
@@ -32,10 +32,11 @@ non-chainable:
 
 	- each(fn)         - runs the results through the given function.
 	- invoke(method)   - runs the results, invoking the named method.
+	- first(|fn)       - returns the first item, or the first that passes fn.
 	- toArray()        - returns an array.
 	- contains(o|p)    - returns true if something satisfies the predicate or matches the object.
 	- some(o|p)        - returns true if something satisfies the predicate or matches the object.
-	- indexOf(o)       - returns -1 if item not found, or the index.
+	- indexOf(p|v)     - returns -1 if item p is not found, or prop p != v, or the index.
 	- every(fn)        - checks to see if all items satisfy the predicate.
 	- reduce(fn, memo) - reduces the results, starting at memo, or if not, the first item.
 	- length()         - returns the overall length.
@@ -66,13 +67,12 @@ var Link = (function() {
 	}
 	
 	WherePoint.prototype.run = function(a) {
-		var i = -1, l = a.length - 1, e = this.env,
+		var i = 0, l = a.length, e = this.env,
 			f = this.func, n = this.next;
 		if (e.take)
-			while (++i < l && !e.stop) { if (f(a[i])) n.exec(a[i]); }
+			while (i < l && !e.stop) { if (f(a[i])) n.exec(a[i]); i++; }
 		else
-			while (++i < l) { if (f(a[i])) n.exec(a[i]); }
-		return i;
+			while (i < l) { if (f(a[i])) n.exec(a[i]); i++; }
 	}
 
 	function RejectPoint(fn, reject) {
@@ -86,13 +86,12 @@ var Link = (function() {
 	}
 	
 	RejectPoint.prototype.run = function(a) {
-		var i = -1, l = a.length - 1, e = this.env,
+		var i = 0, l = a.length, e = this.env,
 			f = this.func, n = this.next;
 		if (e.take)
-			while (++i < l && !e.stop) { if (!f(a[i])) n.exec(a[i]); }
+			while (i < l && !e.stop) { if (!f(a[i])) n.exec(a[i]); i++; }
 		else
-			while (++i < l) { if (!f(a[i])) n.exec(a[i]); }
-		return i;
+			while (i < l) { if (!f(a[i])) n.exec(a[i]); i++; }
 	}
 	
 	function FilterByPoint(k, v) {
@@ -107,13 +106,12 @@ var Link = (function() {
 	}
 	
 	FilterByPoint.prototype.run = function(a) {
-		var i = -1, l = a.length - 1, e = this.env,
+		var i = 0, l = a.length, e = this.env,
 			k = this.key, v = this.val, n = this.next;
 		if (e.take)
-			while (++i < l && !e.stop) { if (item[k] == v) n.exec(a[i]); }
+			while (i < l && !e.stop) { if (item[k] == v) n.exec(a[i]); i++; }
 		else
-			while (++i < l) { if (item[k] == v) n.exec(a[i]); }
-		return i;
+			while (i < l) { if (item[k] == v) n.exec(a[i]); i++; }
 	}
 
 	function MapPoint(fn) {
@@ -127,13 +125,12 @@ var Link = (function() {
 	}
 	
 	MapPoint.prototype.run = function(a) {
-		var i = -1, l = a.length - 1, e = this.env,
+		var i = 0, l = a.length, e = this.env,
 			f = this.func, n = this.next;
 		if (e.take)
-			while (++i < l && !e.stop) { n.exec(f(a[i])); }
+			while (i < l && !e.stop) { n.exec(f(a[i])); i++; }
 		else
-			while (++i < l) { n.exec(f(a[i])); }
-		return i;
+			while (i < l) { n.exec(f(a[i])); i++; }
 	}
 
 	function Map2Point(fn1, fn2) {
@@ -148,13 +145,12 @@ var Link = (function() {
 	}
 	
 	Map2Point.prototype.run = function() {
-		var i = -1, l = a.length - 1, e = this.env,
+		var i = 0, l = a.length, e = this.env,
 			f1 = this.map1, f2 = this.map2, n = this.next;
 		if (e.take)
-			while (++i < l && !e.stop) { n.exec(f2(f1(a[i]))); }
+			while (i < l && !e.stop) { n.exec(f2(f1(a[i]))); i++; }
 		else
-			while (++i < l) { n.exec(f2(f1(a[i]))); }
-		return i;
+			while (i < l) { n.exec(f2(f1(a[i]))); i++; }
 	}
 
 	function WhereMapPoint(fn1, fn2) {
@@ -169,13 +165,12 @@ var Link = (function() {
 	}
 	
 	WhereMapPoint.prototype.run = function(a) {
-		var i = -1, l = a.length - 1, e = this.env,
+		var i = 0, l = a.length, e = this.env,
 			f1 = this.where, f2 = this.map, n = this.next;
 		if (e.take)
-			while (++i < l && !e.stop) { if (f1(a[i])) n.exec(f2(a[i])); }
+			while (i < l && !e.stop) { if (f1(a[i])) n.exec(f2(a[i])); i++; }
 		else
-			while (++i < l) { if (f1(a[i])) n.exec(f2(a[i])); }
-		return i;
+			while (i < l) { if (f1(a[i])) n.exec(f2(a[i])); i++; }
 	}
 
 	function MapWherePoint(fn1, fn2) {
@@ -191,17 +186,16 @@ var Link = (function() {
 	}
 
 	MapWherePoint.prototype.run = function(a) {
-		var i = -1, l = a.length - 1, e = this.env,
+		var i = 0, l = a.length, e = this.env,
 			f1 = this.where, f2 = this.map, n = this.next;
 		if (e.take)
-			while (++i < l && !e.stop) {
-				var v = f2(a[i]); if (f1(v)) n.exec(v);
+			while (i < l && !e.stop) {
+				var v = f2(a[i]); if (f1(v)) n.exec(v); i++;
 			}
 		else
-			while (++i < l) {
-				var v = f2(a[i]); if (f1(v)) n.exec(v);
+			while (i < l) {
+				var v = f2(a[i]); if (f1(v)) n.exec(v); i++;
 			}
-		return i;
 	}
 
 	function Where2Point(fn1, fn2) {
@@ -216,17 +210,17 @@ var Link = (function() {
 	}
 	
 	Where2Point.prototype.run = function() {
-		var i = -1, l = a.length - 1, e = this.env;
+		var i = 0, l = a.length, e = this.env;
 			f1 = this.where1, f2 = this.where2, n = this.next;
 		if (e.take)
-			while (++i < l && !e.stop) {
+			while (i < l && !e.stop) {
 				var v = a[i];
-				if (f1(v) && f2(v)) n.exec(v);
+				if (f1(v) && f2(v)) n.exec(v); i++;
 			}
 		else
-			while (++i < l) {
+			while (i < l) {
 				var v = a[i];
-				if (f1(v) && f2(v)) n.exec(v);
+				if (f1(v) && f2(v)) n.exec(v); i++;
 			}
 		return i;
 	}
@@ -285,6 +279,18 @@ var Link = (function() {
 		this.env.stop = true;
 		this.next.exec(item);
 	}
+	
+	function FirstCountPoint(num) {
+		this.next = null;
+		this.env = null;
+		this.num = num;
+		this.i = 0;
+	}
+	
+	FirstCountPoint.prototype.exec = function(item) {
+		if (++this.i == this.num) this.env.stop = true;
+		this.next.exec(item);
+	}
 
 	function GetPoint(n) {
 		this.next = null;
@@ -294,10 +300,11 @@ var Link = (function() {
 	}
 	
 	GetPoint.prototype.exec = function(item) {
+			Debug.alert(this.c + "< "+ this.n);
 		if (this.c == this.n) {
-			this.env.stop = true; this.c = 0;
+			this.env.stop = true;
 			this.next.exec(item);
-		} else this.c++;
+		} this.c++;
 	}
 
 	function ContainsFuncPoint(fn) { // end point
@@ -337,10 +344,36 @@ var Link = (function() {
 		this.next = null;
 		this.env = null;
 		this.value = v;
+		this.index = 0;
+		this.found = false;
 	}
 	
 	IndexOfPoint.prototype.exec = function(item) {
-		if (item == this.value) this.env.stop = true;
+		if (item == this.value) this.env.stop = this.found = true;
+		else this.index++;
+	}
+
+	IndexOfPoint.prototype.run = function(a) {
+		var i = 0, l = a.length, v = this.value, n = this.next;
+		while (i < l) { if (a[i] == v) { this.index = i; this.found = true; break; } else i++; }
+	}
+
+	function IndexOfPropPoint(p, v) { // end point
+		this.next = null;
+		this.env = null;
+		this.prop = p;
+		this.value = v;
+		this.index = 0;
+	}
+	
+	IndexOfPropPoint.prototype.exec = function(item) {
+		if (item[this.prop] == this.value) this.env.stop = this.found = true;
+		else this.index++;
+	}
+	
+	IndexOfPropPoint.prototype.run = function(a) {
+		var i = 0, l = a.length, p = this.prop, v = this.value, n = this.next;
+		while (i < l) { if (a[i][p] == v) { this.index = i; this.found = true; break; } else i++; }
 	}
 
 	function EachPoint(fn) { this.exec = fn; }
@@ -380,9 +413,8 @@ var Link = (function() {
 	InvokePoint.prototype.exec = function(item) { item[this.name](); }
 	
 	InvokePoint.prototype.run = function(a) {
-		var i = -1, l = a.length - 1, n = this.name;
-		while(++i < l) { a[i][n](); }
-		return i;
+		var i = 0, l = a.length, n = this.name;
+		while(i < l) { a[i++][n](); }
 	}
 
 	function TakePoint(size) {
@@ -452,9 +484,8 @@ var Link = (function() {
 	AllPoint.prototype.exec = function(item) { this.array[this.i++] = item; }
 	
 	AllPoint.prototype.run = function(a) {
-		var i = -1, l = a.length - 1;
-		while (++i < l) this.array.push(a[i]);
-		return i;
+		var i = 0, l = a.length;
+		while (i < l) this.array.push(a[i++]);
 	}
 	
 	/** Functional Layer **/
@@ -486,16 +517,13 @@ var Link = (function() {
 		this.env.stop = false;
 		if (point) this.pushPoint(point);
 		var start = this.points[0];
-		if (start.run) {
-			this.env.index = start.run(this.target, this.points);
-		}
+		if (start.run) start.run(this.target, this.points);
 		else {
-			var a = this.target, l = a.length - 1, i = -1, e = this.env;
+			var a = this.target, l = a.length, i = 0, e = this.env;
 			if (e.take)
-				while (++i < l && !e.stop) start.exec(a[i]);
+				while (i < l && !e.stop) start.exec(a[i++]);
 			else
-				while (++i < l) start.exec(a[i]);
-			this.env.index = i;
+				while (i < l) start.exec(a[i++]);
 		}
 		this.points.length--;
 	}
@@ -529,11 +557,15 @@ var Link = (function() {
 		return point.pass;
 	}
 	
-	function IndexOf(o) {
+	function IndexOf(p, v) {
 		this.env.take = true;
-		var point = new IndexOfPoint(o);
+		var point;
+		if (v !== undefined)
+			point = new IndexOfPropPoint(p, v);
+		else
+			point = new IndexOfPoint(p);
 		this.run(point);
-		return this.env.index - 1;
+		return point.found ? point.index : -1;
 	}
 	
 	function GroupBy(fn) {
@@ -610,13 +642,18 @@ var Link = (function() {
 		this.run(new InvokePoint(name, context));
 	}
 	
-	function First(fn) {
+	function First(o) {
 		this.env.take = true;
-		if (fn)
-			this.pushPoint(new FirstFuncPoint(fn));
+		var point;
+		if (typeof o == "function")
+			point = new FirstFuncPoint(o);
+		else if (typeof o == "number")
+			return o < 0 ? undefined : this.take(o);
 		else
-			this.pushPoint(new FirstPoint());
-		return this;
+			point = new FirstPoint();
+		this.pushPoint(point);
+		var a = this.toArray();
+		return a.length > 0 ? a[0] : undefined;
 	}
 	
 	function Zip(array) {
@@ -632,9 +669,10 @@ var Link = (function() {
 		return this;
 	}
 	
-	function Last() {
+	function Last(count) {
 		var a = this.toArray();
-		return a[a.length - 1];
+		if (!count) count = 1;
+		return a.splice(a.length - count);
 	}
 	
 	function Random(times) {
@@ -657,12 +695,9 @@ var Link = (function() {
 	
 	function Get(num) {
 		this.env.take = true;
-		if (num < 0) Env.stop = true;
-		else if (num == 0)
-			this.pushPoint(new FirstPoint());
-		else
-			this.pushPoint(new GetPoint(num));
-		return this;
+		this.pushPoint(new GetPoint(num));
+		var a = this.toArray();
+		return a.length > 0 ? a[0] : undefined;
 	}
 	
 	function Uniq() {
@@ -691,10 +726,12 @@ var Link = (function() {
 		run: Run,
 		where: Where,
 		filter: Where,
+		accept: Where,
 		filterEach: FilterEach,
 		filterBy: FilterBy,
 		whereBy: FilterBy,
 		reject: Reject,
+		filterOut: Reject,
 		map: Map,
 		first: First,
 		toArray: ToArray,
