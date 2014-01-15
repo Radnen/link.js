@@ -1,7 +1,7 @@
 link.js
 =======
 
-Version: 0.2.2
+Version: 0.2.3
 
 Link.js is a very fast general-purpose functional programming library.
 
@@ -24,7 +24,7 @@ Examples
 Link's main purpose is to do work on arrays, whether it is arrays of objects or primitives. When you want to do
 some kind of filtering, you may be tempted to write out the for loop each time you want to do something different.
 In the case of libraries like Link.js, Lazy.js or Underscore.js, you can do those filterings and mappings more
-efficiently by lifting all of the heavy for loop work for you.
+efficiently by lifting all of the heavy for-loop work for you.
 
 Grabbing all even numbers:
 ``` javascript
@@ -34,18 +34,52 @@ var evens = Link([1, 2, 3, 4, 5]).filter(even).toArray();
 
 Finding the index of a particular object:
 ``` javacript
-var list = [{ name: "bob" }, { name: "joe" }, { name: "tom" }, { name: "ann" }, { name: "sue" }];
-var index = Link(list).indexOf("name", "ann");
+var list = [{ name: "Bob" }, { name: "Joe" }, { name: "Tom" }, { name: "Ann" }, { name: "Sue" }];
+var index = Link(list).indexOf("name", "Ann");
 ```
 
-Running a function for each item that results from some long query:
+Filtering unique elements is interesting, unlike other libraries Link cannot subscribe itself to a particular uniqueness method.
+You may want a lightweight, and fast checker or a powerful deep-inspection checker. So, I leave it up to you. You may like to
+know it will always filter out primitives very fast (strings, numbers, boolean). On objects it may not know how to proceed.
+So, here is an example of how to filter out items which are unique on a first-level basis:
+
 ``` javascript
-Link(stuff).map(work).filter(even).unique().each(function(item) { console.log(item); });
+function filter_shallow(item, other) {
+    for (var i in item) {
+		if (item[i] != other[i]) return false;
+    }
+    return true;
+}
+
+Link([{x: 0, y: 0}, {x: 0, y: 0}, {x: 1, y: 1}, {x: 0, y: 1}, {x: 1, y: 0}]).uniq(filter_shallow).toArray();
+
+// produces: [{x: 0, y: 0}, {x: 1, y: 1}, {x: 0, y: 1}, {x: 1, y: 0}]
 ```
 
-To write the above in a for loop, you may write a lot more ode than you need. For example, the unique element in the
-list would need rewriting each time you write a for loop that uses such a thing. Then, if you did write the for loop
-there is a chance you got something wrong. ;)
+On more complex data, the above may not be good enough, but certainly is a fast way of doing it for smaller chunks of data. Now,
+if you do not specify a uniqueness checker, it'll default to checking the object references instead, which may not be
+a bad idea sometimes:
+
+``` javascript
+function point(x, y) { this.x = x; this.y = y; }
+
+var zero = new point(0, 0);
+var ones = new point(1, 1);
+var other = new point(0, 1);
+
+Link([ones, ones, zero, other, zero, other, ones, ones]).uniq().toArray();
+
+// produces: [ones, zero, other]
+```
+
+Ok... so Here's a lot of work:
+``` javascript
+Link(numbers).map(addRandom).filter(even).unique().each(function(item) { console.log(item); });
+```
+
+To write the above in a for loop, you may write a lot more code than you need. For example, finding the unique element
+in the list would need a special library or is tedious each time you write a for loop that uses such a thing. Then, if
+you did write the for loop there is a chance you got something wrong. ;)
 
 How it Works
 ============
@@ -102,9 +136,10 @@ var results = Link(array).map(add).filter(even).first().toArray();
 - filterBy(name, v) - filters out objects whose named property does not match the value.
 - reject(fn)        - perform the opposite of filter.
 - get(num)          - tries to get the indexed item.
-- uniq()            - filters the results to only unique items.
+- uniq(test)        - filters the results to only unique items. May also use a uniqueness test on objects.
 - zip(array)        - combines the contents of the array with the current elements.
 - slice(a, b)       - returns results between [a, b).
+- skip(num)         - skips first 'num' elements.
 
 Non-Chainable:
 --------------

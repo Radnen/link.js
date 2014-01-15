@@ -1,11 +1,11 @@
 /**
 * Script: link.js
 * Written by: Radnen
-* Updated: 1/14/2014
+* Updated: 1/15/2014
 **/
 
 /**************
-	VERSION 0.2.2
+	VERSION 0.2.3
 	
 	Link.js is a very fast general-purpose functional programming library.
 	Still highly experimental, and still under construction.
@@ -21,9 +21,10 @@ chainable:
 	- filterBy(name, v) - filters out objects whose named property does not match the value.
 	- reject(fn)        - perform the opposite of filter.
 	- get(num)          - tries to get the indexed item.
-	- uniq()            - filters the results to only unique items.
+	- uniq(test)        - filters the results to only unique items. May also use a uniqueness test on objects.
 	- zip(array)        - combines the contents of the array with the current elements.
 	- slice(a, b)       - returns results between [a, b).
+	- skip(num)         - skips first 'num' elements.
 
 non-chainable:
 	These are non-chainable since they must perform the query first,
@@ -291,6 +292,18 @@ var Link = (function() {
 		if (++this.i == this.num) this.env.stop = true;
 		this.next.exec(item);
 	}
+	
+	function SkipPoint(n) {
+		this.next = null;
+		this.env = null;
+		this.c = 0;
+		this.n = n;
+	}
+	
+	SkipPoint.prototype.exec = function(item) {
+		if (this.c == this.n) this.next.exec(item);
+		this.c++;
+	}	
 
 	function GetPoint(n) {
 		this.next = null;
@@ -300,7 +313,6 @@ var Link = (function() {
 	}
 	
 	GetPoint.prototype.exec = function(item) {
-			Debug.alert(this.c + "< "+ this.n);
 		if (this.c == this.n) {
 			this.env.stop = true;
 			this.next.exec(item);
@@ -441,14 +453,26 @@ var Link = (function() {
 		if (this.func(item)) this.counts.num++;
 	}
 
-	function UniqPoint() { // still experimental
+	// true unique-ness testing is a near-impossible or made too damn slow in JS, so an approximation will do:
+	function UniqPoint(test) { // still experimental
 		this.next = null;
 		this.env = null;
-		this.set = [];
+		this.test = test || false;
+		this.set = []; // for primitives
+		this.ref = []; // for object references
 	}
 	
 	UniqPoint.prototype.exec = function(item) {
-		if (!this.set[item]) { this.set[item] = true; this.next.exec(item); }
+		if (typeof item == "object") {
+			var i = this.ref.length;
+			if (this.test)
+				while (i--) { if (this.test(item, this.ref[i])) return; }
+			else
+				while (i--) { if (this.ref[i] == item) return; }
+			this.ref.push(item);
+			this.next.exec(item);
+		}
+		else if (!this.set[item]) { this.set[item] = true; this.next.exec(item); }
 	}
 
 	function LengthPoint() { // end point
@@ -462,16 +486,15 @@ var Link = (function() {
 	function ReducePoint(fn, m) { // end point
 		this.next = null;
 		this.env = null;
-		var func = fn, memo = m;
-		
-		if (m !== undefined)
-			this.exec = function(item) { memo = fn(memo, item); };
+		this.func = fn;
+		this.memo = m || false;
+	}
+	
+	ReducePoint.prototype.exec = function(item) {
+		if (this.memo === false)
+			this.memo = item;
 		else
-			this.exec = function(item) {
-				memo = item;
-				this.exec = function(item) { memo = fn(memo, item); };
-			}
-		this.getMemo = function() { return memo; }
+			this.memo = this.func(this.memo, item);
 	}
 
 	function AllPoint(array) { // end point
@@ -589,7 +612,7 @@ var Link = (function() {
 	function Reduce(agg, memo) {
 		var point = new ReducePoint(agg, memo);
 		this.run(point);
-		return point.getMemo();
+		return point.memo;
 	}
 		
 	function Sample(num) {
@@ -640,6 +663,11 @@ var Link = (function() {
 	
 	function Invoke(name, context) {
 		this.run(new InvokePoint(name, context));
+	}
+	
+	function Skip(num) {
+		this.pushPoint(new SkipPoint(num));
+		return this;
 	}
 	
 	function First(o) {
@@ -700,8 +728,8 @@ var Link = (function() {
 		return a.length > 0 ? a[0] : undefined;
 	}
 	
-	function Uniq() {
-		this.pushPoint(new UniqPoint());
+	function Uniq(test) {
+		this.pushPoint(new UniqPoint(test));
 		return this;
 	}
 	
@@ -738,6 +766,7 @@ var Link = (function() {
 		count: Count,
 		length: Length,
 		size: Length,
+		skip: Skip,
 		contains: Contains,
 		invoke: Invoke,
 		some: Contains,
