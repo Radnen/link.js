@@ -1,7 +1,7 @@
 link.js
 =======
 
-Version: 0.2.3
+Version: 0.2.4
 
 Link.js is a very fast general-purpose functional programming library.
 
@@ -140,6 +140,8 @@ var results = Link(array).map(add).filter(even).first().toArray();
 - zip(array)        - combines the contents of the array with the current elements.
 - slice(a, b)       - returns results between [a, b).
 - skip(num)         - skips first 'num' elements.
+- is(instance)      - filters out items that are not of the prototype.
+- type(type)        - filters out items that are not of the type.
 
 Non-Chainable:
 --------------

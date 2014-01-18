@@ -1,11 +1,11 @@
 /**
 * Script: link.js
 * Written by: Radnen
-* Updated: 1/15/2014
+* Updated: 1/17/2014
 **/
 
 /**************
-	VERSION 0.2.3
+	VERSION 0.2.4
 	
 	Link.js is a very fast general-purpose functional programming library.
 	Still highly experimental, and still under construction.
@@ -25,6 +25,8 @@ chainable:
 	- zip(array)        - combines the contents of the array with the current elements.
 	- slice(a, b)       - returns results between [a, b).
 	- skip(num)         - skips first 'num' elements.
+	- is(instance)      - filters out items that are not of the prototype.
+	- type(type)        - filters out items that are not of the type.
 
 non-chainable:
 	These are non-chainable since they must perform the query first,
@@ -59,7 +61,7 @@ var Link = (function() {
 
 	function WherePoint(fn, reject) {
 		this.next = null;
-		this.env = null;
+		this.env  = null;
 		this.func = fn;
 	}
 	
@@ -78,7 +80,7 @@ var Link = (function() {
 
 	function RejectPoint(fn, reject) {
 		this.next = null;
-		this.env = null;
+		this.env  = null;
 		this.func = fn;
 	}
 	
@@ -97,9 +99,9 @@ var Link = (function() {
 	
 	function FilterByPoint(k, v) {
 		this.next = null;
-		this.env = null;
-		this.key = k;
-		this.val = v;
+		this.env  = null;
+		this.key  = k;
+		this.val  = v;
 	}
 	
 	FilterByPoint.prototype.exec = function(item) {
@@ -110,14 +112,14 @@ var Link = (function() {
 		var i = 0, l = a.length, e = this.env,
 			k = this.key, v = this.val, n = this.next;
 		if (e.take)
-			while (i < l && !e.stop) { if (item[k] == v) n.exec(a[i]); i++; }
+			while (i < l && !e.stop) { if (a[k] == v) n.exec(a[i]); i++; }
 		else
 			while (i < l) { if (item[k] == v) n.exec(a[i]); i++; }
 	}
 
 	function MapPoint(fn) {
 		this.next = null;
-		this.env = null;
+		this.env  = null;
 		this.func = fn;
 	}
 	
@@ -136,7 +138,7 @@ var Link = (function() {
 
 	function Map2Point(fn1, fn2) {
 		this.next = null;
-		this.env = null;
+		this.env  = null;
 		this.map1 = fn1;
 		this.map2 = fn2;
 	}
@@ -145,7 +147,7 @@ var Link = (function() {
 		this.next.exec(this.map2(this.map1(item)));
 	}
 	
-	Map2Point.prototype.run = function() {
+	Map2Point.prototype.run = function(a) {
 		var i = 0, l = a.length, e = this.env,
 			f1 = this.map1, f2 = this.map2, n = this.next;
 		if (e.take)
@@ -155,10 +157,10 @@ var Link = (function() {
 	}
 
 	function WhereMapPoint(fn1, fn2) {
-		this.next = null;
-		this.env = null;
+		this.next  = null;
+		this.env   = null;
 		this.where = fn1;
-		this.map = fn2;
+		this.map   = fn2;
 	}
 	
 	WhereMapPoint.prototype.exec = function(item) {
@@ -175,9 +177,9 @@ var Link = (function() {
 	}
 
 	function MapWherePoint(fn1, fn2) {
-		this.next = null;
-		this.env = null;
-		this.map = fn1;
+		this.next  = null;
+		this.env   = null;
+		this.map   = fn1;
 		this.where = fn2;
 	}
 	
@@ -200,8 +202,8 @@ var Link = (function() {
 	}
 
 	function Where2Point(fn1, fn2) {
-		this.next = null;
-		this.env = null;
+		this.next   = null;
+		this.env    = null;
 		this.where1 = fn1;
 		this.where2 = fn2;
 	}
@@ -210,7 +212,7 @@ var Link = (function() {
 		if (this.where1(item) && this.where2(item)) this.next.exec(item);
 	}
 	
-	Where2Point.prototype.run = function() {
+	Where2Point.prototype.run = function(a) {
 		var i = 0, l = a.length, e = this.env;
 			f1 = this.where1, f2 = this.where2, n = this.next;
 		if (e.take)
@@ -228,16 +230,16 @@ var Link = (function() {
 
 	function ZipPoint(array) { // experimental
 		this.next = null;
-		this.env = null;
-		this.i = 0;
+		this.env  = null;
+		this.i    = 0;
 	}
 
 	ZipPoint.prototype.exec = function(item) { this.next.exec([item, array[this.i++]]); }
 	
 	function GroupByPoint(groupFn) { // end point
-		this.next = null;
-		this.env = null;
-		this.func = groupFn;
+		this.next  = null;
+		this.env   = null;
+		this.func  = groupFn;
 		this.group = {};
 	}
 	
@@ -249,10 +251,10 @@ var Link = (function() {
 
 	function SlicePoint(a, b) {
 		this.next = null;
-		this.env = null;
-		this.i = 0;
-		this.a = a;
-		this.b = b;
+		this.env  = null;
+		this.i    = 0;
+		this.a    = a;
+		this.b    = b;
 	}
 
 	SlicePoint.prototype.exec = function(item) {
@@ -263,7 +265,7 @@ var Link = (function() {
 	
 	function FirstFuncPoint(fn) {
 		this.next = null;
-		this.env = null;
+		this.env  = null;
 		this.func = fn;
 	}
 	
@@ -273,7 +275,7 @@ var Link = (function() {
 
 	function FirstPoint() {
 		this.next = null;
-		this.env = null;
+		this.env  = null;
 	}
 	
 	FirstPoint.prototype.exec = function(item) {
@@ -283,9 +285,9 @@ var Link = (function() {
 	
 	function FirstCountPoint(num) {
 		this.next = null;
-		this.env = null;
-		this.num = num;
-		this.i = 0;
+		this.env  = null;
+		this.num  = num;
+		this.i    = 0;
 	}
 	
 	FirstCountPoint.prototype.exec = function(item) {
@@ -293,23 +295,56 @@ var Link = (function() {
 		this.next.exec(item);
 	}
 	
+	function IsPoint(inst) {
+		this.next = null;
+		this.env  = null;
+		this.inst = inst;
+	}
+	
+	IsPoint.prototype.exec = function(item) { if (item instanceof this.inst) this.next.exec(item); }
+	
+	IsPoint.prototype.run = function(a) {
+		var i = 0, l = a.length, e = this.env,
+			ins = this.inst, n = this.next;
+		if (e.take)
+			while (i < l && !e.stop) { if (a[i] instanceof ins) n.exec(a[i]); i++; }
+		else
+			while (i < l) { if (a[i] instanceof ins) n.exec(a[i]); i++; }
+	}
+	
+	function TypePoint(type) {
+		this.next = null;
+		this.env  = null;
+		this.type = type;
+	}
+	
+	TypePoint.prototype.exec = function(item) { if (typeof item == this.type) this.next.exec(item); }
+	
+	TypePoint.prototype.run = function(a) {
+		var i = 0, l = a.length, e = this.env,
+			t = this.type, n = this.next;
+		if (e.take)
+			while (i < l && !e.stop) { if (typeof a[i] == t) n.exec(a[i]); i++; }
+		else
+			while (i < l) { if (typeof a[i] == t) n.exec(a[i]); i++; }
+	}
+	
 	function SkipPoint(n) {
 		this.next = null;
-		this.env = null;
-		this.c = 0;
-		this.n = n;
+		this.env  = null;
+		this.n    = n;
 	}
 	
 	SkipPoint.prototype.exec = function(item) {
-		if (this.c == this.n) this.next.exec(item);
-		this.c++;
+		if (this.env.skip == this.n) { this.next.exec(item); }
+		else this.env.skip++;
 	}	
 
 	function GetPoint(n) {
 		this.next = null;
-		this.env = null;
-		this.c = 0;
-		this.n = n;
+		this.env  = null;
+		this.c    = 0;
+		this.n    = n;
 	}
 	
 	GetPoint.prototype.exec = function(item) {
@@ -321,7 +356,7 @@ var Link = (function() {
 
 	function ContainsFuncPoint(fn) { // end point
 		this.next = null;
-		this.env = null;
+		this.env  = null;
 		this.func = fn;
 		this.pass = false;
 	}
@@ -332,8 +367,8 @@ var Link = (function() {
 
 	function ContainsPoint(o) { // end point
 		this.next = null;
-		this.env = null;
-		this.obj = o;
+		this.env  = null;
+		this.obj  = o;
 		this.pass = false;
 	}
 	
@@ -343,7 +378,7 @@ var Link = (function() {
 	
 	function EveryPoint(func) { // end point
 		this.next = null;
-		this.env = null;
+		this.env  = null;
 		this.pass = true;
 		this.func = func;
 	}
@@ -353,8 +388,8 @@ var Link = (function() {
 	}
 
 	function IndexOfPoint(v) { // end point
-		this.next = null;
-		this.env = null;
+		this.next  = null;
+		this.env   = null;
 		this.value = v;
 		this.index = 0;
 		this.found = false;
@@ -371,9 +406,9 @@ var Link = (function() {
 	}
 
 	function IndexOfPropPoint(p, v) { // end point
-		this.next = null;
-		this.env = null;
-		this.prop = p;
+		this.next  = null;
+		this.env   = null;
+		this.prop  = p;
 		this.value = v;
 		this.index = 0;
 	}
@@ -391,11 +426,11 @@ var Link = (function() {
 	function EachPoint(fn) { this.exec = fn; }
 	
 	function MinPoint(rank) { // end point
-		this.next = null;
-		this.env = null;
-		this.func = rank;
+		this.next  = null;
+		this.env   = null;
+		this.func  = rank;
 		this.value = Number.MAX_VALUE;
-		this.obj;
+		this.obj   = undefined;
 	}
 	
 	MinPoint.prototype.exec = function(item) {
@@ -404,11 +439,11 @@ var Link = (function() {
 	}
 
 	function MaxPoint(rank) { // end point
-		this.next = null;
-		this.env = null;
-		this.func = rank;
+		this.next  = null;
+		this.env   = null;
+		this.func  = rank;
 		this.value = Number.MIN_VALUE;
-		this.obj;
+		this.obj   = undefined;
 	}
 
 	MaxPoint.prototype.exec = function(item) {
@@ -418,7 +453,7 @@ var Link = (function() {
 	
 	function InvokePoint(method) { // end point
 		this.next = null;
-		this.env = null;
+		this.env  = null;
 		this.name = method;
 	}
 	
@@ -431,9 +466,9 @@ var Link = (function() {
 
 	function TakePoint(size) {
 		this.next = null;
-		this.env = null;
-		this.i = 0;
-		this.num = size;
+		this.env  = null;
+		this.i    = 0;
+		this.num  = size;
 	}
 	
 	TakePoint.prototype.exec = function(item) {
@@ -442,9 +477,9 @@ var Link = (function() {
 	}
 
 	function CountPoint(func) { // end point
-		this.next = null;
-		this.env = null;
-		this.func = func;
+		this.next   = null;
+		this.env    = null;
+		this.func   = func;
 		this.counts = { num: 0, total: 0 };
 	}
 	
@@ -456,10 +491,10 @@ var Link = (function() {
 	// true unique-ness testing is a near-impossible or made too damn slow in JS, so an approximation will do:
 	function UniqPoint(test) { // still experimental
 		this.next = null;
-		this.env = null;
+		this.env  = null;
 		this.test = test || false;
-		this.set = []; // for primitives
-		this.ref = []; // for object references
+		this.set  = []; // for primitives
+		this.ref  = []; // for object references
 	}
 	
 	UniqPoint.prototype.exec = function(item) {
@@ -477,15 +512,15 @@ var Link = (function() {
 
 	function LengthPoint() { // end point
 		this.next = null;
-		this.env = null;
-		this.num = 0;
+		this.env  = null;
+		this.num  = 0;
 	}
 	
 	LengthPoint.prototype.exec = function(item) { this.num++; }
 
 	function ReducePoint(fn, m) { // end point
 		this.next = null;
-		this.env = null;
+		this.env  = null;
 		this.func = fn;
 		this.memo = m || false;
 	}
@@ -498,17 +533,18 @@ var Link = (function() {
 	}
 
 	function AllPoint(array) { // end point
-		this.next = null;
-		this.env = null;
-		this.i = 0;
+		this.next  = null;
+		this.env   = null;
+		this.i     = 0;
 		this.array = [];
 	}
 	
 	AllPoint.prototype.exec = function(item) { this.array[this.i++] = item; }
 	
 	AllPoint.prototype.run = function(a) {
-		var i = 0, l = a.length;
-		while (i < l) this.array.push(a[i++]);
+		var i = 0, l = a.length, b = this.array;
+		while (i < l) b[i] = a[i++];
+		this.array = b;
 	}
 	
 	/** Functional Layer **/
@@ -530,17 +566,14 @@ var Link = (function() {
 	function Each(fn) {
 		this.run(new EachPoint(fn));
 	}
-	
-	function FilterEach(where, func) {
-		var point = new EachPoint(function(item) { if (where(item)) func(item); });
-		this.run(point);
-	}
-	
+		
 	function Run(point) {
 		this.env.stop = false;
+		this.env.skip = 0;
 		if (point) this.pushPoint(point);
 		var start = this.points[0];
-		if (start.run) start.run(this.target, this.points);
+
+		if (start.run) { start.run(this.target); }
 		else {
 			var a = this.target, l = a.length, i = 0, e = this.env;
 			if (e.take)
@@ -670,6 +703,16 @@ var Link = (function() {
 		return this;
 	}
 	
+	function Is(inst) {
+		this.pushPoint(new IsPoint(inst));
+		return this;
+	}
+	
+	function Type(type) {
+		this.pushPoint(new TypePoint(type));
+		return this;
+	}
+	
 	function First(o) {
 		this.env.take = true;
 		var point;
@@ -742,51 +785,54 @@ var Link = (function() {
 	/** Interface Layer **/
 	
 	function Chain(array) {
-		this.env    = { take: false, stop: false, index: 0 };
+		this.env    = { take: false, stop: false, skip: 0 };
 		this.target = array || [];
 		this.points = [];
 	}
 	
 	Chain.prototype = {
-		pushPoint: PushPoint,
+		pushPoint : PushPoint,
 		replaceEnd: ReplaceEnd,
-		each: Each,
-		run: Run,
-		where: Where,
-		filter: Where,
-		accept: Where,
-		filterEach: FilterEach,
-		filterBy: FilterBy,
-		whereBy: FilterBy,
-		reject: Reject,
-		filterOut: Reject,
-		map: Map,
-		first: First,
-		toArray: ToArray,
-		count: Count,
-		length: Length,
-		size: Length,
-		skip: Skip,
-		contains: Contains,
-		invoke: Invoke,
-		some: Contains,
-		exists: Contains,
-		indexOf: IndexOf,
-		groupBy: GroupBy,
-		every: Every,
-		reduce: Reduce,
-		zip: Zip,
-		slice: Slice,
-		last: Last,
-		random: Random,
-		sample: Random,
-		take: Take,
-		get: Get,
-		uniq: Uniq,
-		unique: Uniq,
-		sort: Sort,
-		max: Max,
-		min: Min
+		run       : Run,
+
+		accept    : Where,
+		contains  : Contains,
+		count     : Count,
+		drop      : Skip,
+		each      : Each,
+		every     : Every,
+		exists    : Contains,
+		filter    : Where,
+		filterBy  : FilterBy,
+		filterOut : Reject,
+		first     : First,
+		get       : Get,
+		groupBy   : GroupBy,
+		indexOf   : IndexOf,
+		invoke    : Invoke,
+		is        : Is,
+		last      : Last,
+		length    : Length,
+		map       : Map,
+		max       : Max,
+		min       : Min,
+		random    : Random,
+		reduce    : Reduce,
+		reject    : Reject,
+		sample    : Random,
+		size      : Length,
+		skip      : Skip,
+		slice     : Slice,
+		some      : Contains,
+		sort      : Sort,
+		take      : Take,
+		toArray   : ToArray,
+		type      : Type,
+		uniq      : Uniq,
+		unique    : Uniq,
+		where     : Where,
+		whereBy   : FilterBy,
+		zip       : Zip,
 	}
 	
 	return function(arr) { return new Chain(arr); }
