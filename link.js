@@ -66,9 +66,9 @@ var Link = (function() {
 		var i = 0, l = a.length, e = this.env,
 			k = this.key, v = this.val, n = this.next;
 		if (e.take)
-			while (i < l && !e.stop) { if (a[k] == v) n.exec(a[i]); i++; }
+			while (i < l && !e.stop) { if (a[i][k] == v) n.exec(a[i]); i++; }
 		else
-			while (i < l) { if (item[k] == v) n.exec(a[i]); i++; }
+			while (i < l) { if (a[i][k] == v) n.exec(a[i]); i++; }
 	}
 
 	function MapPoint(fn) {

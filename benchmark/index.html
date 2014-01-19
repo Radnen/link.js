@@ -34,6 +34,12 @@
 						if (even(result)) noop(add1(result));
 					}
 				})
+				.add("optimized for loop", function() {
+					for (var i = 0, l = array.length; i < l; ++i) {
+						var result = array[i] + 1;
+						if (result % 2 == 0) result += 1;
+					}
+				})
 				.on("cycle", function(event) {
 					console.log(String(event.target));
 				})
