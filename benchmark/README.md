@@ -3,20 +3,38 @@
 
 I could not find a good place for benchmarking, so here you can run
 the tests against Lazy and Lo-Dash, you'll notice for every case,
-Link is the fastest.
+Link is either the faster, or on par with Lazy.
 
-However, the optimization process does take some time away from it doing work.
-So to not muddle up the results, I cache the chain by doing this:
+The interactive test is located here:
+http://radnen.tengudev.com/link-benchmark/
 
-``` javascript
-var link = Link(array).map(add1); //... and so on ...
+On my machine the speeds of the first test (map-filter-map-each) are
+quite good, almost approaching native for-loop speed.
+
+```
+Link map-filter-map-each: 0.1900000000023283ms index.html:38
+Lazy map-filter-map-each: 1.1200000000098953ms index.html:38
+Lo-Dash map-filter-map-each: 4.499999999970896ms index.html:38
+actual for loop: 0.18000000003667083ms index.html:38
+Fastest is actual for loop
 ```
 
-Lazy can do the same thing. And is totally something you should do when using such libraries.
-(I'm not sure about lo-dash). Anyways, this simply means I'm not taking time reconstructing
-the chain each benchmarking pass. I think this is fair when we are trying to test the speed
-of it doing the actual work.
+The code comparisons for that test:
+``` javascript
+var array = Lazy.range(100000).toArray();
 
-That said, the speed of creating the chain isn't so bad. Perhaps if it optimizes
-frequently it'll bog down. It should be on par with Lazy in any case. Plus, longer
-chains means more work, so if you can shorten your chain then it only gets better.
+// Link:
+Link(array).map(add1).filter(even).map(add1).each(noop);
+
+// Lazy:
+Lazy(array).map(add1).filter(even).map(add1).each(noop);
+
+// Lo-dash:
+_.chain(array).map(add1).filter(even).map(add1).each(noop);
+
+//For loop:
+for (var i = 0; i < array.length; ++i) {
+	var result = add1(array[i]);
+	if (even(result)) noop(add1(result));
+}
+```

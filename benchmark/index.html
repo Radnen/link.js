@@ -17,18 +17,22 @@
 			
 			function run1() {
 				var array = Lazy.range(100000).toArray();
-				var lazy = Lazy(array).map(add1).filter(even).map(add1);
-				var link = Link(array).map(add1).filter(even).map(add1);
 
 				var suite = new Suite;
 				suite.add("Link map-filter-map-each", function() {
-					link.each(noop);
+					Link(array).map(add1).filter(even).map(add1).each(noop);
 				})
 				.add("Lazy map-filter-map-each", function() {
-					lazy.each(noop);
+					Lazy(array).map(add1).filter(even).map(add1).each(noop);
 				})
 				.add("Lo-Dash map-filter-map-each", function() {
 					_.chain(array).map(add1).filter(even).map(add1).each(noop);
+				})
+				.add("actual for loop", function() {
+					for (var i = 0; i < array.length; ++i) {
+						var result = add1(array[i]);
+						if (even(result)) noop(add1(result));
+					}
 				})
 				.on("cycle", function(event) {
 					console.log(String(event.target));
@@ -41,15 +45,13 @@
 
 			function run2() {
 				var array = Lazy.range(100000).toArray();
-				var link = Link(array).filter(even);
-				var lazy = Lazy(array).filter(even);
 
 				var suite = new Suite;
 				suite.add("Link filter-indexOf", function() {
-					link.indexOf(88);
+					Link(array).filter(even).indexOf(88);
 				})
 				.add("Lazy filter-indexOf", function() {
-					lazy.indexOf(88);
+					Lazy(array).filter(even).indexOf(88);
 				})
 				.add("Lo-Dash filter-indexOf", function() {
 					_.chain(array).filter(even).indexOf(88);
@@ -65,15 +67,13 @@
 			
 			function run3() {
 				var array = Lazy.range(100000).toArray();
-				var link = Link(array).filter(even);
-				var lazy = Lazy(array).filter(even);
 
 				var suite = new Suite;
 				suite.add("Link filter-toArray", function() {
-					link.toArray();
+					Link(array).filter(even).toArray();
 				})
 				.add("Lazy filter-toArray", function() {
-					lazy.toArray();
+					Lazy(array).filter(even).toArray();
 				})
 				.on("cycle", function(event) {
 					console.log(String(event.target));
@@ -86,15 +86,13 @@
 			
 			function run4() {
 				var array = Lazy.range(100000).toArray();
-				var link = Link(array).filter(even);
-				var lazy = Lazy(array).filter(even);
 
 				var suite = new Suite;
 				suite.add("Link filter-each", function() {
-					link.each(noop);
+					Link(array).filter(even).each(noop);
 				})
 				.add("Lazy filter-each", function() {
-					lazy.each(noop);
+					Lazy(array).filter(even).each(noop);
 				})
 				.add("Lo-Dash filter-each", function() {
 					_.chain(array).filter(even).each(noop);
@@ -110,15 +108,13 @@
 			
 			function run5() {
 				var array = Lazy.range(100000).toArray();
-				var link = Link(array).filter(even).map(add1);
-				var lazy = Lazy(array).filter(even).map(add1);
 
 				var suite = new Suite;
 				suite.add("Link filter-map-each", function() {
-					link.each(noop);
+					Link(array).filter(even).map(add1).each(noop);
 				})
 				.add("Lazy filter-map-each", function() {
-					lazy.each(noop);
+					Lazy(array).filter(even).map(add1).each(noop);
 				})
 				.add("Lo-Dash filter-map-each", function() {
 					_.chain(array).filter(even).map(add1).each(noop);
