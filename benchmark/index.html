@@ -133,6 +133,12 @@
 				})
 				.run();
 			}
+			
+			function test() {
+				var a = [[0, 1], [2, 3], [4, 5, 7], [6, 7]];
+				var s = Link(a).expand().filter(even).toArray();
+				alert(s);
+			}
 		</script>
 	</head>
 	<body>
@@ -144,6 +150,7 @@
 			<li>filter-map-each <button onclick="run5();">Run Test</button></li>
 			<li>filter-each <button onclick="run4();">Run Test</button></li>
 			<li>filter-toArray <button onclick="run3();">Run Test</button></li>
+			<li>test <button onclick="test();">Test Feature</button></li>
 		</ul>
 	</body>
 </html>

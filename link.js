@@ -417,6 +417,16 @@ var Link = (function() {
 		var i = 0, l = a.length, n = this.name;
 		while(i < l) { a[i++][n](); }
 	}
+	
+	function ExpandPoint(target) {
+		this.next   = null;
+		this.env    = null;
+	}
+	
+	ExpandPoint.prototype.exec = function(item) {
+		var i = 0, l = item.length;
+		while (i < l) { this.next.exec(item[i]); i++; }
+	}
 
 	function TakePoint(size) {
 		this.next = null;
@@ -596,6 +606,11 @@ var Link = (function() {
 		return point.pass;
 	}
 	
+	function Expand() {
+		this.pushPoint(new ExpandPoint());
+		return this;
+	}
+	
 	function Reduce(agg, memo) {
 		var point = new ReducePoint(agg, memo);
 		this.run(point);
@@ -738,7 +753,7 @@ var Link = (function() {
 	
 	/** Interface Layer **/
 	
-	function Chain(array) {
+	function Chain(array, dim) {
 		this.env    = { take: false, stop: false, skip: 0 };
 		this.target = array || [];
 		this.points = [];
@@ -756,6 +771,7 @@ var Link = (function() {
 		each      : Each,
 		every     : Every,
 		exists    : Contains,
+		expand    : Expand,
 		filter    : Where,
 		filterBy  : FilterBy,
 		filterOut : Reject,
