@@ -135,8 +135,8 @@
 			}
 			
 			function test() {
-				var a = [[0, 1], [2, 3], [4, 5, 7], [6, 7]];
-				var s = Link(a).expand().filter(even).toArray();
+				var a = [{a: [0, 1]}, {a: [2]}, {a: [3, 4, 5]}, {a: [6, 7]}];
+				var s = Link(a).expand("a").filter(even).toArray();
 				alert(s);
 			}
 		</script>
