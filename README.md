@@ -1,7 +1,7 @@
 link.js
 =======
 
-Version: 0.2.4
+Version: 0.2.5b
 
 Link.js is a very fast general-purpose functional programming library.
 
@@ -119,6 +119,21 @@ Link supports many features common to libraries similar to it. This part is stil
 ones listed here to work well enough, especially  the popular ones. Many of them have several names. Where and
 Filter do the same thing as does Unique and Uniq. So it can be close to a drop-in replacement of your other
 favorite functional logic libraries.
+
+Multi-Dimensional Arrays
+------------------------
+
+Via the .expand() method, Link will branch out and run all sub-arrays. Here is an example running Link on a 2D array.
+
+``` javascript
+	var a = [[0, 1], [2, 3], [4, 5, 7], [6, 7]];
+	var s = Link(a).expand().filter(even).toArray(); // s = [0, 2, 4, 6]
+```
+
+Calling .expand() multiple times can accommodate 3D arrays and so on. A word of warning, however: Link will continue
+to run the query as if it were in a single array context. Therefore things like .indexOf() will presently give you the
+real index value of the item, not the index of the item in its containing array. This really only affects a few methods.
+Methods like .each() and .invoke() should work just as you expect them to (but now expanded to run child arrays).
 
 Chainable:
 ----------

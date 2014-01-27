@@ -2,7 +2,7 @@
 * Script: link.js
 * Written by: Radnen
 * Updated: 1/18/2014
-* Version: 0.2.5
+* Version: 0.2.5b
 * Desc: Link.js is a very fast general-purpose functional programming library.
 		Still highly experimental, and still under construction.
 **/
