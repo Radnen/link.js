@@ -140,7 +140,11 @@ var a = [{a: [0, 1]}, {a: [2]}, {a: [3, 4, 5]}, {a: [6, 7]}];
 var s = Link(a).expand("a").filter(even).toArray(); // s = [0, 2, 4, 6];
 ```
 
-This is useful for quick item array filtering.
+This is useful for quick item array filtering. It is also the same thing as doing:
+```
+var a = [{a: [0, 1]}, {a: [2]}, {a: [3, 4, 5]}, {a: [6, 7]}];
+var s = Link(a).pluck("a").expand().filter(even).toArray(); // s = [0, 2, 4, 6];
+```
 
 Chainable:
 ----------
@@ -164,6 +168,8 @@ var results = Link(array).map(add).filter(even).first().toArray();
 - skip(num)         - skips first 'num' elements.
 - is(instance)      - filters out items that are not of the prototype.
 - type(type)        - filters out items that are not of the type.
+- pluck(prop)       - continues the chain using the object property named 'prop'.
+- expand(|prop)     - expands Link to use inner arrays, or if prop is specified arrays in prop. 
 
 Non-Chainable:
 --------------

@@ -70,6 +70,25 @@ var Link = (function() {
 		else
 			while (i < l) { if (a[i][k] == v) n.exec(a[i]); i++; }
 	}
+	
+	function PluckPoint(prop) {
+		this.next = null;
+		this.env  = null;
+		this.prop = prop;
+	}
+	
+	PluckPoint.prototype.exec = function(item) {
+		this.next.exec(item[this.prop]);
+	}
+	
+	PluckPoint.prototype.run = function(a) {
+		var i = 0, l = a.length, e = this.env,
+			k = this.prop, n = this.next;
+		if (e.take)
+			while (i < l && !e.stop) { n.exec(a[i][k]); i++; }
+		else
+			while (i < l) { n.exec(a[i][k]); i++; }
+	}
 
 	function MapPoint(fn) {
 		this.next = null;
@@ -599,6 +618,11 @@ var Link = (function() {
 		return point.found ? point.index : -1;
 	}
 	
+	function Pluck(prop) {
+		this.pushPoint(new PluckPoint(prop));
+		return this;
+	}
+	
 	function GroupBy(fn) {
 		var point = new GroupByPoint(fn);
 		this.run(point);
@@ -801,6 +825,7 @@ var Link = (function() {
 		map       : Map,
 		max       : Max,
 		min       : Min,
+		pluck     : Pluck,
 		random    : Random,
 		reduce    : Reduce,
 		reject    : Reject,
