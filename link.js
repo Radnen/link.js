@@ -1,7 +1,7 @@
 /**
 * Script: link.js
 * Written by: Radnen
-* Updated: 1/27/2014
+* Updated: 1/28/2014
 * Version: 0.2.5b
 * Desc: Link.js is a very fast general-purpose functional programming library.
 		Still highly experimental, and still under construction.
@@ -359,6 +359,17 @@ var Link = (function() {
 	EveryPoint.prototype.exec = function(item) {
 		if (!this.func(item)) { this.pass = false; this.env.stop = true; }
 	}
+	
+	function NonePoint(func) { // end point
+		this.next = null;
+		this.env  = null;
+		this.pass = true;
+		this.func = func;
+	}
+	
+	NonePoint.prototype.exec = function(item) {
+		if (this.func(item)) { this.pass = false; this.env.stop = true; }
+	}
 
 	function IndexOfPoint(v) { // end point
 		this.next  = null;
@@ -641,6 +652,13 @@ var Link = (function() {
 		return point.pass;
 	}
 	
+	function None(fn) {
+		this.env.take = true;
+		var point = new NonePoint(fn);
+		this.run(point);
+		return point.pass;
+	}
+	
 	function Expand(prop) {
 		if (prop)
 			this.pushPoint(new ExpandPropPoint(prop));
@@ -825,6 +843,7 @@ var Link = (function() {
 		map       : Map,
 		max       : Max,
 		min       : Min,
+		none      : None,
 		pluck     : Pluck,
 		random    : Random,
 		reduce    : Reduce,
