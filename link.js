@@ -1,10 +1,10 @@
 /**
 * Script: link.js
 * Written by: Radnen
-* Updated: 1/28/2014
-* Version: 0.2.5b
+* Updated: 1/29/2014
+* Version: 0.2.6
 * Desc: Link.js is a very fast general-purpose functional programming library.
-		Still highly experimental, and still under construction.
+		Still somewhat experimental, and still under construction.
 **/
 
 // optimization idea came from compilation:
@@ -201,13 +201,15 @@ var Link = (function() {
 		return i;
 	}
 
-	function ZipPoint(array) { // experimental
+	function ZipPoint(array) {
 		this.next = null;
 		this.env  = null;
 		this.i    = 0;
 	}
 
 	ZipPoint.prototype.exec = function(item) { this.next.exec([item, array[this.i++]]); }
+	
+	ZipPoint.prototype.reset = function() { this.i = 0; }
 	
 	function GroupByPoint(groupFn) { // end point
 		this.next  = null;
@@ -306,24 +308,28 @@ var Link = (function() {
 		this.next = null;
 		this.env  = null;
 		this.n    = n;
+		this.skip = 0;
 	}
 	
 	SkipPoint.prototype.exec = function(item) {
-		if (this.env.skip == this.n) { this.next.exec(item); }
-		else this.env.skip++;
-	}	
+		if (this.skip == this.n) { this.next.exec(item); }
+		else this.skip++;
+	}
+	
+	SkipPoint.prototype.reset = function() { this.skip = 0; }
 
 	function GetPoint(n) {
 		this.next = null;
 		this.env  = null;
 		this.c    = 0;
 		this.n    = n;
+		this.obj  = null;
 	}
 	
 	GetPoint.prototype.exec = function(item) {
 		if (this.c == this.n) {
 			this.env.stop = true;
-			this.next.exec(item);
+			this.obj = item;
 		} this.c++;
 	}
 
@@ -494,7 +500,7 @@ var Link = (function() {
 	}
 
 	// true unique-ness testing is a near-impossible or made too damn slow in JS, so an approximation will do:
-	function UniqPoint(test) { // still experimental
+	function UniqPoint(test) {
 		this.next = null;
 		this.env  = null;
 		this.test = test || false;
@@ -513,6 +519,11 @@ var Link = (function() {
 			this.next.exec(item);
 		}
 		else if (!this.set[item]) { this.set[item] = true; this.next.exec(item); }
+	}
+	
+	UniqPoint.prototype.reset = function() {
+		this.set.length = 0;
+		this.ref.length = 0;
 	}
 
 	function LengthPoint() { // end point
@@ -577,7 +588,14 @@ var Link = (function() {
 		this.env.skip = 0;
 		if (point) this.pushPoint(point);
 		var start = this.points[0];
+		
+		// reset the points that store data between runs
+		for (var i = 0; i < this.points.length; ++i) {
+			var p = this.points[i];
+			if (p.reset) p.reset();
+		}
 
+		// kick-start points that have a runner tied to them:
 		if (start.run) { start.run(this.target); }
 		else {
 			var a = this.target, l = a.length, i = 0, e = this.env;
@@ -791,9 +809,9 @@ var Link = (function() {
 	
 	function Get(num) {
 		this.env.take = true;
-		this.pushPoint(new GetPoint(num));
-		var a = this.toArray();
-		return a.length > 0 ? a[0] : undefined;
+		var point = new GetPoint(num);
+		this.run(point);
+		return point.obj;
 	}
 	
 	function Uniq(test) {
@@ -807,10 +825,15 @@ var Link = (function() {
 		return v;
 	}
 	
+	function Retarget(a) {
+		this.target = [];
+		return this;
+	}
+	
 	/** Interface Layer **/
 	
 	function Chain(array, dim) {
-		this.env    = { take: false, stop: false, skip: 0 };
+		this.env    = { take: false, stop: false };
 		this.target = array || [];
 		this.points = [];
 	}
@@ -819,6 +842,7 @@ var Link = (function() {
 		pushPoint : PushPoint,
 		replaceEnd: ReplaceEnd,
 		run       : Run,
+		retarget  : Retarget,
 
 		accept    : Where,
 		contains  : Contains,
@@ -857,6 +881,7 @@ var Link = (function() {
 		take      : Take,
 		toArray   : ToArray,
 		type      : Type,
+		typeOf    : Type,
 		uniq      : Uniq,
 		unique    : Uniq,
 		unroll    : Expand,
