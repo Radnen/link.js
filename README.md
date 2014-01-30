@@ -1,7 +1,7 @@
-link.js
+Link.js
 =======
 
-Version: 0.2.5b
+Version: 0.2.6
 
 Link.js is a very fast general-purpose functional programming library.
 
@@ -155,21 +155,20 @@ These can be linked up like a chain, ex:
 var results = Link(array).map(add).filter(even).first().toArray();
 ```
 
-- take(n)           - takes the first n results.
-- first(c)          - takes the first c items.
-- map(fn)           - perform a map operation with fn.
+- expand(|prop)     - expands Link to use inner arrays, or if prop is specified arrays in prop. 
 - filter(fn)        - perform a filter, using fn as the predicate.
 - filterBy(name, v) - filters out objects whose named property does not match the value.
+- first(c)          - takes the first c items.
+- is(instance)      - filters out items that are not of the prototype.
+- map(fn)           - perform a map operation with fn.
+- pluck(prop)       - continues the chain using the object property named 'prop'.
 - reject(fn)        - perform the opposite of filter.
-- get(num)          - tries to get the indexed item.
+- skip(num)         - skips first 'num' elements.
+- slice(a, b)       - returns results between [a, b).
+- take(n)           - takes the first n results.
+- type(type)        - filters out items that are not of the type.
 - uniq(test)        - filters the results to only unique items. May also use a uniqueness test on objects.
 - zip(array)        - combines the contents of the array with the current elements.
-- slice(a, b)       - returns results between [a, b).
-- skip(num)         - skips first 'num' elements.
-- is(instance)      - filters out items that are not of the prototype.
-- type(type)        - filters out items that are not of the type.
-- pluck(prop)       - continues the chain using the object property named 'prop'.
-- expand(|prop)     - expands Link to use inner arrays, or if prop is specified arrays in prop. 
 
 Non-Chainable:
 --------------
@@ -181,23 +180,24 @@ that return an array by putting them into another Link context. ex:
 var results = Link(Link(array).where(even).sample(5)).map(timesten).each(print);
 ```
 
-- each(fn)         - runs the results through the given function.
-- invoke(method)   - runs the results, invoking the named method.
-- first(|fn)       - returns the first item, or the first that passes fn.
-- toArray()        - returns an array.
 - contains(o|p)    - returns true if something satisfies the predicate or matches the object.
-- some(o|p)        - returns true if something satisfies the predicate or matches the object.
-- indexOf(p|v)     - returns -1 if item p is not found, or prop p != v, or the index.
-- every(fn)        - checks to see if all items satisfy the predicate.
-- reduce(fn, memo) - reduces the results, starting at memo, or if not, the first item.
-- length()         - returns the overall length.
 - count(p)         - returns the overall number of times the predicate was satisfied.
-- min(rank)        - returns the minimum element using a ranking function as a benchmark.
-- max(rank)        - returns the maximum element using a ranking function as a benchmark.
-- last()           - returns the last result.
-- sample(num)      - selects a random element, up to num of them or once.
-- sort(fn)         - sorts the resulting list with given function, or uses JS default.
+- each(fn)         - runs the results through the given function.
+- every(fn)        - checks to see if all items satisfy the predicate.
+- first(|fn)       - returns the first item, or the first that passes fn.
+- get(num)          - tries to get the indexed item.
 - groupBy(fn)      - returns an array of values grouped by the grouping function.
+- indexOf(p|v)     - returns -1 if item p is not found, or prop p != v, or the index.
+- invoke(method)   - runs the results, invoking the named method.
+- last()           - returns the last result.
+- length()         - returns the overall length.
+- max(rank)        - returns the maximum element using a ranking function as a benchmark.
+- min(rank)        - returns the minimum element using a ranking function as a benchmark.
+- reduce(fn, memo) - reduces the results, starting at memo, or if not, the first item.
+- sample(num)      - selects a random element, up to num of them or once.
+- some(o|p)        - returns true if something satisfies the predicate or matches the object.
+- sort(fn)         - sorts the resulting list with given function, or uses JS default.
+- toArray()        - returns an array.
 
 Planned Features
 ================
