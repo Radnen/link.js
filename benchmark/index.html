@@ -135,9 +135,23 @@
 			}
 			
 			function test() {
-				var a = [{a: [0, 1]}, {a: [2]}, {a: [3, 4, 5]}, {a: [6, 7]}];
-				var s = Link(a).pluck("a").toArray();
-				alert(s);
+				var s = Link.create(3, 3, function(n) { return n; });
+				
+				function ToString(item) {
+					var str = "";
+					if (item instanceof Array) {
+						str += "[";
+						for (var i = 0, l = item.length; i < l; ++i) {
+							str += ToString(item[i]);
+							if (i < l-1) str += ",";
+						}
+						str += "]";
+					}
+					else return item.toString();
+					return str;
+				}
+				
+				alert(ToString(s));
 			}
 		</script>
 	</head>

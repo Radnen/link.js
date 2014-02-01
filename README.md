@@ -141,9 +141,32 @@ var s = Link(a).expand("a").filter(even).toArray(); // s = [0, 2, 4, 6];
 ```
 
 This is useful for quick item array filtering. It is also the same thing as doing:
-```
+```javascript
 var a = [{a: [0, 1]}, {a: [2]}, {a: [3, 4, 5]}, {a: [6, 7]}];
 var s = Link(a).pluck("a").expand().filter(even).toArray(); // s = [0, 2, 4, 6];
+```
+
+Multi-Dimensional Array Initialization
+--------------------------------------
+
+Via Link.create(..., value), you can construct n-dimensional arrays in a snap filled with a default value. Here's an example:
+``` javascript
+// a 10x5 array filled with 0's:
+var array = Link.create(10, 5, 0);
+```
+
+Sometimes you want to fill an array with objects, let's do that for a 3 dimensional array:
+``` javascript
+// a 2x2x6 array with new items in each slot:
+var array = Link.create(2, 2, 6, function() { return new Item(); });
+```
+
+Notice that the first n-1 arguments defines the rank, and the last argument defines the 'fill'. If the fill is not a function
+it'll fill the resulting n-dimensional array with the object. If it's a function it'll run that function. The function does
+receive a parameter: an index value so you *could* do some work with it as you fill the array.
+``` javascript
+// a 2x3 array: [[0,1,2][0,1,2]]
+var array = Link.create(2, 3, function(n) { return n; });
 ```
 
 Chainable:
