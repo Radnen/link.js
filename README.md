@@ -1,7 +1,7 @@
 Link.js
 =======
 
-Version: 0.2.6
+Version: 0.2.8b
 
 Link.js is a very fast general-purpose functional programming library.
 
@@ -123,7 +123,8 @@ favorite functional logic libraries.
 Multi-Dimensional Expansion
 ---------------------------
 
-Via the .expand() method, Link will branch out and run all sub-arrays. Here is an example running Link on a 2D array.
+Via the .expand() or .unroll() method, Link will branch out and run all sub-arrays. Here is an example running Link on
+a 2D array.
 ``` javascript
 	var a = [[0, 1], [2, 3], [4, 5, 7], [6, 7]];
 	var s = Link(a).expand().filter(even).toArray(); // s = [0, 2, 4, 6]
@@ -138,12 +139,17 @@ Furthermore, expand can expand into properties of arrays of objects like so:
 ``` javascript
 var a = [{a: [0, 1]}, {a: [2]}, {a: [3, 4, 5]}, {a: [6, 7]}];
 var s = Link(a).expand("a").filter(even).toArray(); // s = [0, 2, 4, 6];
+
+// the same as doing:
+var s = Link(a).pluck("a").expand().filter(even).toArray(); // s = [0, 2, 4, 6];
 ```
 
-This is useful for quick item array filtering. It is also the same thing as doing:
-```javascript
-var a = [{a: [0, 1]}, {a: [2]}, {a: [3, 4, 5]}, {a: [6, 7]}];
-var s = Link(a).pluck("a").expand().filter(even).toArray(); // s = [0, 2, 4, 6];
+It now supports this ability through the main argument list:
+``` javascript
+var list = Link(a1, a2, a3).toArray();
+
+// the same as doing:
+var list = Link([a1, a2, a3]).expand().toArray();
 ```
 
 Multi-Dimensional Array Initialization
@@ -178,20 +184,28 @@ These can be linked up like a chain, ex:
 var results = Link(array).map(add).filter(even).first().toArray();
 ```
 
-- expand(|prop)     - expands Link to use inner arrays, or if prop is specified arrays in prop. 
-- filter(fn)        - perform a filter, using fn as the predicate.
-- filterBy(name, v) - filters out objects whose named property does not match the value.
-- first(c)          - takes the first c items.
-- is(instance)      - filters out items that are not of the prototype.
-- map(fn)           - perform a map operation with fn.
-- pluck(prop)       - continues the chain using the object property named 'prop'.
-- reject(fn)        - perform the opposite of filter.
-- skip(num)         - skips first 'num' elements.
-- slice(a, b)       - returns results between [a, b).
-- take(n)           - takes the first n results.
-- type(type)        - filters out items that are not of the type.
-- uniq(test)        - filters the results to only unique items. May also use a uniqueness test on objects.
-- zip(array)        - combines the contents of the array with the current elements.
+*	expand(|prop)     - expands Link to use inner arrays, or if prop is specified arrays in prop. 
+	*	expandInto(prop)
+	*	unroll()
+*	filter(fn)        - perform a filter, using fn as the predicate.
+	*	accept(fn)
+	*	where(fn)
+*	filterBy(name, v) - filters out objects whose named property does not match the value.
+	*	whereBy(name, v)
+*	first(c)          - takes the first c items.
+*	is(instance)      - filters out items that are not of the prototype.
+*	map(fn)           - perform a map operation with fn.
+*	pluck(prop)       - continues the chain using the object property named 'prop'.
+*	reject(fn)        - perform the opposite of filter.
+*	skip(num)         - skips first 'num' elements.
+	*	drop(num)
+*	slice(a, b)       - returns results between [a, b).
+*	take(n)           - takes the first n results.
+*	type(type)        - filters out items that are not of the type.
+	*	typeof(type)
+*	uniq(test)        - filters the results to only unique items. May also use a uniqueness test on objects.
+	*	unique(test)
+*	zip(array)        - combines the contents of the array with the current elements.
 
 Non-Chainable:
 --------------
@@ -203,24 +217,28 @@ that return an array by putting them into another Link context. ex:
 var results = Link(Link(array).where(even).sample(5)).map(timesten).each(print);
 ```
 
-- contains(o|p)    - returns true if something satisfies the predicate or matches the object.
-- count(p)         - returns the overall number of times the predicate was satisfied.
-- each(fn)         - runs the results through the given function.
-- every(fn)        - checks to see if all items satisfy the predicate.
-- first(|fn)       - returns the first item, or the first that passes fn.
-- get(num)          - tries to get the indexed item.
-- groupBy(fn)      - returns an array of values grouped by the grouping function.
-- indexOf(p|v)     - returns -1 if item p is not found, or prop p != v, or the index.
-- invoke(method)   - runs the results, invoking the named method.
-- last()           - returns the last result.
-- length()         - returns the overall length.
-- max(rank)        - returns the maximum element using a ranking function as a benchmark.
-- min(rank)        - returns the minimum element using a ranking function as a benchmark.
-- reduce(fn, memo) - reduces the results, starting at memo, or if not, the first item.
-- sample(num)      - selects a random element, up to num of them or once.
-- some(o|p)        - returns true if something satisfies the predicate or matches the object.
-- sort(fn)         - sorts the resulting list with given function, or uses JS default.
-- toArray()        - returns an array.
+*	contains(o|p)    - returns true if something satisfies the predicate or matches the object.
+	*	some(o|p)
+	*	exists(o|p)
+*	count(p)         - returns the overall number of times the predicate was satisfied.
+*	each(fn)         - runs the results through the given function.
+*	every(fn)        - checks to see if all items satisfy the predicate.
+*	first(|fn)       - returns the first item, or the first that passes fn.
+*	get(num)          - tries to get the indexed item.
+*	groupBy(fn)      - returns an array of values grouped by the grouping function.
+*	indexOf(p|v)     - returns -1 if item p is not found, or prop p != v, or the index.
+*	invoke(method)   - runs the results, invoking the named method.
+*	last()           - returns the last result.
+*	length()         - returns the overall length.
+	*	size()
+*	max(rank)        - returns the maximum element using a ranking function as a benchmark.
+*	min(rank)        - returns the minimum element using a ranking function as a benchmark.
+*	none(fn)         - checks to see if all items do not satisfy the predicate.
+*	reduce(fn, memo) - reduces the results, starting at memo, or if not, the first item.
+*	sample(num)      - selects a random element, up to num of them or once.
+	*	random(num)
+*	sort(fn)         - sorts the resulting list with given function, or uses JS default.
+*	toArray()        - returns an array.
 
 Planned Features
 ================

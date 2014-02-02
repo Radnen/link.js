@@ -1,8 +1,8 @@
 /**
 * Script: link.js
 * Written by: Radnen
-* Updated: 1/31/2014
-* Version: 0.2.7
+* Updated: Feb/1/2014
+* Version: 0.2.8b
 * Desc: Link.js is a very fast general-purpose functional programming library.
 		Still somewhat experimental, and still under construction.
 **/
@@ -890,7 +890,16 @@ var Link = (function() {
 		zip       : Zip,
 	}
 	
-	function Link(arr) { return new Chain(arr); }
+	var _splice = [].splice;
+	
+	function Link(arr, test) {
+		if (!test)
+			return new Chain(arr);
+		else {
+			var a = _splice.call(arguments, 0, arguments.length);
+			return (new Chain(a)).unroll();
+		}
+	}
 	
 	Link.create = function() {
 		var args = arguments,
@@ -898,16 +907,16 @@ var Link = (function() {
 			v    = args[stop],
 			isFn = (typeof v == "function");
 
-		function CreateArray(n, l) {
-			if (n == stop) return (isFn) ? v(l) : v;
-			var a = [], l = args[n];
+		function CreateArray(n, i0) {
+			if (n == stop) return (isFn) ? v(i0) : v;
+			var a = [], l = args[n], n = n + 1;
 			for (var i = 0; i < l; ++i) {
-				a[i] = CreateArray(n + 1, i);
+				a[i] = CreateArray(n, i);
 			}
 			return a;
 		}
 		
-		return CreateArray(0);
+		return CreateArray(0, 0);
 	}
 	
 	return Link;
