@@ -1,7 +1,7 @@
 Link.js
 =======
 
-Version: 0.2.8b
+Version: 0.2.9
 
 Link.js is a very fast general-purpose functional programming library.
 
@@ -160,19 +160,38 @@ Via Link.create(..., value), you can construct n-dimensional arrays in a snap fi
 // a 10x5 array filled with 0's:
 var array = Link.create(10, 5, 0);
 ```
-
 Sometimes you want to fill an array with objects, let's do that for a 3 dimensional array:
 ``` javascript
 // a 2x2x6 array with new items in each slot:
 var array = Link.create(2, 2, 6, function() { return new Item(); });
 ```
-
 Notice that the first n-1 arguments defines the rank, and the last argument defines the 'fill'. If the fill is not a function
 it'll fill the resulting n-dimensional array with the object. If it's a function it'll run that function. The function does
 receive a parameter: an index value so you *could* do some work with it as you fill the array.
 ``` javascript
 // a 2x3 array: [[0,1,2][0,1,2]]
 var array = Link.create(2, 3, function(n) { return n; });
+```
+Inside of the function for array generation you have n arguments, each argument the current index into that dimension of the array.
+
+SQL-like API
+------------
+While there doesn't exist an SQLite version for JS, people tend to make their own database code
+living inside of JS. With some features, Link can help you with this.
+``` javascript
+Link(grades_table).where('name', 'bob').update('grade', 'A');
+```
+So, if you don't need a full-on database system, you could use Link to give you the feel of using
+a database without needing to have a DBMS.
+
+In this example we get the grades of all people whose name starts with 'b':
+``` javascript
+Link(grades_table).where(function(item) { return item.name[0] == 'b'; }).select('grade').toArray();
+```
+Since Link is not a database implementation, the only caveat is that you should think of your SQL-like
+queries backwards. Do the 'selects' last, and the 'wheres' first.
+``` javascript
+Link(data1).join(data2, function(a, b) { return a.id == b.id }).select("name", "date").toArray();
 ```
 
 Chainable:
@@ -192,14 +211,19 @@ var results = Link(array).map(add).filter(even).first().toArray();
 	*	where(fn)
 *	filterBy(name, v) - filters out objects whose named property does not match the value.
 	*	whereBy(name, v)
+	*	where(name, v) - (overload on 'where' for this style)
+	*	filter(name, v) - (alias for overload)
+	*	accept(name, v) - (alias for overload)
 *	first(c)          - takes the first c items.
 *	is(instance)      - filters out items that are not of the prototype.
+*	join(other, func) - joins the context array with 'other' based on the condition function.
 *	map(fn)           - perform a map operation with fn.
 *	pluck(prop)       - continues the chain using the object property named 'prop'.
 *	reject(fn)        - perform the opposite of filter.
 *	skip(num)         - skips first 'num' elements.
 	*	drop(num)
 *	slice(a, b)       - returns results between [a, b).
+*	select(...)       - filters out props of all objects to only the listed ones.
 *	take(n)           - takes the first n results.
 *	type(type)        - filters out items that are not of the type.
 	*	typeof(type)
@@ -224,7 +248,7 @@ var results = Link(Link(array).where(even).sample(5)).map(timesten).each(print);
 *	each(fn)         - runs the results through the given function.
 *	every(fn)        - checks to see if all items satisfy the predicate.
 *	first(|fn)       - returns the first item, or the first that passes fn.
-*	get(num)          - tries to get the indexed item.
+*	get(num)         - tries to get the indexed item.
 *	groupBy(fn)      - returns an array of values grouped by the grouping function.
 *	indexOf(p|v)     - returns -1 if item p is not found, or prop p != v, or the index.
 *	invoke(method)   - runs the results, invoking the named method.
@@ -239,6 +263,7 @@ var results = Link(Link(array).where(even).sample(5)).map(timesten).each(print);
 	*	random(num)
 *	sort(fn)         - sorts the resulting list with given function, or uses JS default.
 *	toArray()        - returns an array.
+*	update(prop, val) - changes the property value in the object to the value, best used with where.
 
 Planned Features
 ================
