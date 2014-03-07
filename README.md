@@ -176,20 +176,21 @@ Inside of the function for array generation you have n arguments, each argument 
 
 SQL-like API
 ------------
-While there doesn't exist an SQLite version for JS, people tend to make their own database code
-living inside of JS. With some features, Link can help you with this.
+If you don't want to use a full-on database system, you *could* use Link to do SQL-like actions to
+arrays of objects. This works similar in theory to ojbect-relational approaches found in most SQL-
+like JS implementations: rows are array entires and columns are object properties.
 ``` javascript
 Link(grades_table).where('name', 'bob').update('grade', 'A');
 ```
 So, if you don't need a full-on database system, you could use Link to give you the feel of using
-a database without needing to have a DBMS.
+a database without resorting to a DBMS.
 
 In this example we get the grades of all people whose name starts with 'b':
 ``` javascript
-Link(grades_table).where(function(item) { return item.name[0] == 'b'; }).select('grade').toArray();
+Link(grades_table).where(function(item) { return item.name[0] == 'b'; }).select('name', 'grade').toArray();
 ```
 Since Link is not a database implementation, the only caveat is that you should think of your SQL-like
-queries backwards. Do the 'selects' last, and the 'wheres' first.
+queries backwards. Do the 'selects' last, and the 'wheres' first. Here is a join (only inner so far):
 ``` javascript
 Link(data1).join(data2, function(a, b) { return a.id == b.id }).select("name", "date").toArray();
 ```
