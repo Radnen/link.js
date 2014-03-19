@@ -1,7 +1,7 @@
 Link.js
 =======
 
-Version: 0.2.9
+Version: 0.2.10
 
 Link.js is a very fast general-purpose functional programming library.
 
