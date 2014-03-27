@@ -1,7 +1,7 @@
 Link.js
 =======
 
-Version: 0.2.10
+Version: 0.2.11
 
 Link.js is a very fast general-purpose functional programming library.
 
@@ -193,6 +193,14 @@ Since Link is not a database implementation, the only caveat is that you should 
 queries backwards. Do the 'selects' last, and the 'wheres' first. Here is a join (only inner so far):
 ``` javascript
 Link(data1).join(data2, function(a, b) { return a.id == b.id }).select("name", "date").toArray();
+```
+
+Aliases!
+--------
+If you don't like the API, then forget about it! (well... sort of). You can decide to recast any of the
+existing features to something new. For example, you can decide to recast 'filter' to 'include' by doing this:
+``` javascript
+Link.alias('filter', 'include');
 ```
 
 Chainable:

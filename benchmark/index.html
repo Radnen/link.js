@@ -135,38 +135,8 @@
 			}
 			
 			function test() {
-				//var s = Link.create(5, 5, 5, function(n, l, m) { return m + "-" + l + "-" + n; });
-				
-				function ToString(item) {
-					var str = "";
-					if (item instanceof Array) {
-						str += "[";
-						for (var i = 0, l = item.length; i < l; ++i) {
-							str += ToString(item[i]);
-							if (i < l-1) str += ",";
-						}
-						str += "]";
-					}
-					else if (item instanceof Object) {
-						str += "{";
-						for (var i in item) {
-							str += i + ":" + ToString(item[i]) + ",";
-						}
-						str = str.substr(0, str.length - 1);
-						str += "}";
-					}
-					else return item.toString();
-					return str;
-				}
-				
-				//console.log(ToString(s));
-				//console.log(s[4][4][4]);*/
-				
-				var names = [{id: 1, name: "bob", grade: "A"}, {id: 2, name: "tom"}, {id: 3, name: "sam"}];
-				var money = [{money: 5, name: "bob"}, {money: 15, name: "tom"}, {money: 45, name: "sam"}];
-				// get the money of bob, where bob is in a player array and money is in a separate 'table'.
-				var a = Link(names).where("name", "bob").join(money, function(a, b) { return a.name == b.name; }).select("money", "name").toArray();
-				console.log(ToString(a));
+				Link.alias('filter', 'include');
+				console.log(Link([0, 1, 2, 3, 4]).include(even).toArray());
 			}
 		</script>
 	</head>
