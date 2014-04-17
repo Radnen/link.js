@@ -193,7 +193,7 @@
 				var abc = { a: ["A", "B", "C"], name: "abc" };
 				var cde = { a: ["C", "D", "E"], name: "cde" };
 				var cba = { a: ["C", "B", "A"], name: "cba" };
-				console.log(Link([abc, cde, cba]).has("a", "A").pluck("name").toArray());
+				console.log(Link([abc, cde, cba]).has("a", function(i) { return i == "A"; }).pluck("name").toArray());
 			}
 		</script>
 		

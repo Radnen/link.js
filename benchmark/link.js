@@ -51,9 +51,20 @@ var Link = (function() {
 	}
 	
 	HasPoint.prototype.exec = function(item) {
+		if (_IndexOf(item[this.prop], this.item) >= 0) this.next.exec(item);
+	}
+
+	function HasFuncPoint(prop, func) {
+		this.next = null;
+		this.env  = null;
+		this.func = func;
+		this.prop = prop;
+	}
+	
+	HasFuncPoint.prototype.exec = function(item) {
 		var array = item[this.prop];
 		for (var i = 0, l = array.length; i < l; ++i) {
-			if (array[i] === this.item) this.next.exec(item);
+			if (this.func(array[i])) { this.next.exec(item); break; }
 		}
 	}
 	
@@ -741,7 +752,10 @@ var Link = (function() {
 	}
 	
 	function Has(prop, value) {
-		this.pushPoint(new HasPoint(prop, value));
+		if (typeof value === "function")
+			this.pushPoint(new HasFuncPoint(prop, value));
+		else
+			this.pushPoint(new HasPoint(prop, value));
 		return this;
 	}
 	

@@ -236,7 +236,7 @@ var results = Link(array).map(add).filter(even).first().toArray();
 	*	filter(name, v) - (alias for overload)
 	*	accept(name, v) - (alias for overload)
 *	first(c)          - takes the first c items.
-*	has(p, v)         - filters out objects whose inner arrays don't contain the value.
+*	has(p, v|fn)      - filters out objects whose inner arrays don't contain the value or matches the predicate.
 *	is(instance)      - filters out items that are not of the prototype.
 *	join(other, func) - joins the context array with 'other' based on the condition function.
 *	map(fn)           - perform a map operation with fn.
