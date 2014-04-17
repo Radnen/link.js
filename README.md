@@ -1,7 +1,7 @@
 Link.js
 =======
 
-Version: 0.2.11
+Version: 0.2.12
 
 Link.js is a very fast general-purpose functional programming library.
 
@@ -80,6 +80,18 @@ Link(numbers).map(addRandom).filter(even).unique().each(function(item) { console
 To write the above in a for loop, you may write a lot more code than you need. For example, finding the unique element
 in the list would need a special library or is tedious each time you write a for loop that uses such a thing. Then, if
 you did write the for loop there is a chance you got something wrong. ;)
+
+You can also use contains and filterBy on multiple values for one-many relationships. It does an or-based check:
+```
+var people = [{ name: "bob", age: 25 }, { name: "sally", age: 24 }, { name: "steve", age: 21 }]
+Link(people).filterBy("name", ["bob", "sally"]).pluck("age").toArray() // [25, 24];
+Link(people).filterBy("name", "sally").pluck("age").toArray() // [24];
+
+var numbers = [0, 1, 2, 3, 4];
+Link(numbers).contains(4) // true
+Link(numbers).contains([5, 3]) // true because of the '3' in the list
+Link(numbers).contains([5, 6, 7, 8]) // false
+```
 
 How it Works
 ============
@@ -218,12 +230,13 @@ var results = Link(array).map(add).filter(even).first().toArray();
 *	filter(fn)        - perform a filter, using fn as the predicate.
 	*	accept(fn)
 	*	where(fn)
-*	filterBy(name, v) - filters out objects whose named property does not match the value.
-	*	whereBy(name, v)
+*	filterBy(name, v|a) - filters out objects whose named property does not match the value or array of values.
+	*	whereBy(name, v|a)
 	*	where(name, v) - (overload on 'where' for this style)
 	*	filter(name, v) - (alias for overload)
 	*	accept(name, v) - (alias for overload)
 *	first(c)          - takes the first c items.
+*	has(p, v)         - filters out objects whose inner arrays don't contain the value.
 *	is(instance)      - filters out items that are not of the prototype.
 *	join(other, func) - joins the context array with 'other' based on the condition function.
 *	map(fn)           - perform a map operation with fn.
@@ -250,9 +263,9 @@ that return an array by putting them into another Link context. ex:
 var results = Link(Link(array).where(even).sample(5)).map(timesten).each(print);
 ```
 
-*	contains(o|p)    - returns true if something satisfies the predicate or matches the object.
-	*	some(o|p)
-	*	exists(o|p)
+*	contains(o|p|a)    - returns true if something satisfies the predicate, or matches the object or anything in an array.
+	*	some(o|p|a)
+	*	exists(o|p|a)
 *	count(p)         - returns the overall number of times the predicate was satisfied.
 *	each(fn)         - runs the results through the given function.
 *	every(fn)        - checks to see if all items satisfy the predicate.
@@ -273,6 +286,14 @@ var results = Link(Link(array).where(even).sample(5)).map(timesten).each(print);
 *	sort(fn)         - sorts the resulting list with given function, or uses JS default.
 *	toArray()        - returns an array.
 *	update(prop, val) - changes the property value in the object to the value, best used with where.
+
+Global
+------
+
+*	Link.create(..., fill) - creates multi-dimension arrays filed with the fill. If the fill is a function it calls it each time.
+The functions takes n parameters, each the current index of the array.
+*	Link.range(value) - creates a single array filled with numbers [0, range).
+*	Link.alias(from, to) - realiases a method from one name to another (it doesn't overwrite, it creates).
 
 Planned Features
 ================

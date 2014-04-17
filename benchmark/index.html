@@ -16,7 +16,7 @@
 			function toArray(a, b) { a.push(b); return a; };
 			
 			function run1() {
-				var array = Lazy.range(100000).toArray();
+				var array = Link.range(100000);
 
 				var suite = new Suite;
 				suite.add("Link map-filter-map-each", function() {
@@ -50,7 +50,7 @@
 			}
 
 			function run2() {
-				var array = Lazy.range(100000).toArray();
+				var array = Link.range(100000);
 
 				var suite = new Suite;
 				suite.add("Link filter-indexOf", function() {
@@ -72,7 +72,7 @@
 			}
 			
 			function run3() {
-				var array = Lazy.range(100000).toArray();
+				var array = Link.range(100000);
 
 				var suite = new Suite;
 				suite.add("Link filter-toArray", function() {
@@ -91,7 +91,7 @@
 			}
 			
 			function run4() {
-				var array = Lazy.range(100000).toArray();
+				var array = Link.range(100000);
 
 				var suite = new Suite;
 				suite.add("Link filter-each", function() {
@@ -113,7 +113,7 @@
 			}
 			
 			function run5() {
-				var array = Lazy.range(100000).toArray();
+				var array = Link.range(100000);
 
 				var suite = new Suite;
 				suite.add("Link filter-map-each", function() {
@@ -134,11 +134,73 @@
 				.run();
 			}
 			
+			function run6() {
+				var array = Link.create(90000, function(i) {
+					if (i < 30000) return { test: "A" };
+					if (i < 60000) return { test: "B" };
+					if (i < 90000) return { test: "C" };
+				});
+				
+				function itemfilter(item) {
+					return item.test === "A" || item.test === "C";
+				}
+				
+				var suite = new Suite;
+				suite.add("Link filter-by A, C", function() {
+					Link(array).filterBy("test", ["A", "C"]).each(noop);
+				})
+				.add("Link custom filter A, C", function() {
+					Link(array).filter(itemfilter).each(noop);
+				})
+				.add("Lazy custom filter A, C", function() {
+					Lazy(array).filter(itemfilter).each(noop);
+				})
+				.on("cycle", function(event) {
+					console.log(String(event.target));
+				})
+				.on("complete", function() {
+					console.log('Fastest is ' + this.getFastest());
+				})
+				.run();
+			}
+
+			function run7() {
+				var array = Link.create(100000, function() { return { name: "A" }; });
+				
+				var suite = new Suite;
+				suite.add("Link pluck", function() {
+					Link(array).pluck("name").each(noop);
+				})
+				.add("Lazy pluck", function() {
+					Lazy(array).pluck("name").each(noop);
+				})
+				.on("cycle", function(event) {
+					console.log(String(event.target));
+				})
+				.on("complete", function() {
+					console.log('Fastest is ' + this.getFastest());
+				})
+				.run();
+			}
+			
 			function test() {
-				Link.alias('filter', 'include');
-				console.log(Link([0, 1, 2, 3, 4]).include(even).toArray());
+				// an association list:
+				var array = [{ buds: ["bob", "tom"], name: "sam" }, { buds: ["tom"], name: "bob" }, { buds: ["sally"], name: "tom" }];
+				Link(array).each(function(person) {
+					if (Link(person.buds).contains(["bob", "sally"])) console.log(person.name);
+				});
+				
+				var abc = { a: ["A", "B", "C"], name: "abc" };
+				var cde = { a: ["C", "D", "E"], name: "cde" };
+				var cba = { a: ["C", "B", "A"], name: "cba" };
+				console.log(Link([abc, cde, cba]).has("a", "A").pluck("name").toArray());
 			}
 		</script>
+		
+		<style>
+			li { width: 200px; height: 26px; list-style-type: none;	}
+			button { float: right; }
+		</style>
 	</head>
 	<body>
 		<p>Make sure the console is open to see the results!</p>
@@ -149,6 +211,8 @@
 			<li>filter-map-each <button onclick="run5();">Run Test</button></li>
 			<li>filter-each <button onclick="run4();">Run Test</button></li>
 			<li>filter-toArray <button onclick="run3();">Run Test</button></li>
+			<li>filter-by <button onclick="run6();">Run Test</button></li>
+			<li>pluck-each <button onclick="run7();">Run Test</button></li>
 			<li>test <button onclick="test();">Test Feature</button></li>
 		</ul>
 	</body>
