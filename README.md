@@ -1,7 +1,7 @@
 Link.js
 =======
 
-Version: 0.2.12
+Version: 0.2.13
 
 Link.js is a very fast general-purpose functional programming library.
 
@@ -263,29 +263,29 @@ that return an array by putting them into another Link context. ex:
 var results = Link(Link(array).where(even).sample(5)).map(timesten).each(print);
 ```
 
-*	contains(o|p|a)    - returns true if something satisfies the predicate, or matches the object or anything in an array.
+*	contains(o|p|a)  - returns true if something satisfies the predicate, or matches the object or anything in an array.
 	*	some(o|p|a)
 	*	exists(o|p|a)
-*	count(p)         - returns the overall number of times the predicate was satisfied.
+*	count(p)         - returns the overall number of times the predicate ''p'' was satisfied.
 *	each(fn)         - runs the results through the given function.
 *	every(fn)        - checks to see if all items satisfy the predicate.
-*	first(|fn)       - returns the first item, or the first that passes fn.
+*	first(|fn)       - returns the first item, or the first that passes ''fn''.
 *	get(num)         - tries to get the indexed item.
 *	groupBy(fn)      - returns an array of values grouped by the grouping function.
 *	indexOf(p|v)     - returns -1 if item p is not found, or prop p != v, or the index.
-*	invoke(method)   - runs the results, invoking the named method.
+*	invoke(m, args)  - runs the results, invoking the method named by ''m''.
 *	last()           - returns the last result.
 *	length()         - returns the overall length.
 	*	size()
 *	max(rank)        - returns the maximum element using a ranking function as a benchmark.
 *	min(rank)        - returns the minimum element using a ranking function as a benchmark.
-*	none(fn)         - checks to see if all items do not satisfy the predicate.
+*	none(fn)         - checks to see if all items do not satisfy the predicate ''fn''.
 *	reduce(fn, memo) - reduces the results, starting at memo, or if not, the first item.
-*	sample(num)      - selects a random element, up to num of them or once.
+*	sample(num)      - selects a random element, up to ''num'' of them or once.
 	*	random(num)
 *	sort(fn)         - sorts the resulting list with given function, or uses JS default.
 *	toArray()        - returns an array.
-*	update(prop, val) - changes the property value in the object to the value, best used with where.
+*	update(prop, v)  - changes the property value in the object to the value, best used with where.
 
 Global
 ------
