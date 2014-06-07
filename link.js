@@ -1,8 +1,8 @@
 /**
 * Script: Link.js
 * Written by: Andrew Helenius
-* Updated: Apr/27/2014
-* Version: 0.2.14
+* Updated: Jun/07/2014
+* Version: 0.2.15
 * Desc: Link.js is a very fast general-purpose functional programming library.
 		Still somewhat experimental, and still under construction.
 **/
@@ -85,7 +85,7 @@ var Link = (function() {
 		else
 			while (i < l) { if (!f(a[i])) n.exec(a[i]); i++; }
 	}
-	
+		
 	function FilterByPoint(key, values) {
 		this.next = null;
 		this.env  = null;
@@ -120,16 +120,16 @@ var Link = (function() {
 	}
 	
 	FilterByOnePoint.prototype.exec = function(item) {
-		if (this.val === item[this.key]) this.next.exec(item);
+		if (item[this.key] === this.val) this.next.exec(item);
 	}
 	
 	FilterByOnePoint.prototype.run = function(a) {
 		var i = 0, l = a.length, e = this.env,
-			k = this.key, v = this.val, n = this.next;
+			v = this.val, k = this.key, n = this.next;
 		if (e.take)
-			while (i < l && !e.stop) { if (v === a[i][k]) n.exec(a[i]); i++; }
+			while (!e.stop && i < l) { var p = a[i]; if (v === p[k]) n.exec(p); i++; }
 		else
-			while (i < l) { if (v === a[i][k]) n.exec(a[i]); i++; }
+			while (i < l) { var p = a[i]; if (v === p[k]) n.exec(p); i++; }
 	}
 	
 	function PluckPoint(prop) {
@@ -813,9 +813,8 @@ var Link = (function() {
 	}
 	
 	function FilterBy(key, a) {
-		if (_IsArray(a)) {
+		if (_IsArray(a))
 			this.pushPoint(new FilterByPoint(key, a));
-		}
 		else
 			this.pushPoint(new FilterByOnePoint(key, a));
 		return this;
@@ -957,8 +956,9 @@ var Link = (function() {
 	function Random(times) {
 		if (times === undefined) times = 1;
 		var a = this.toArray();
+		times = Math.min(times, a.length);
 		var samples = [];
-		while(times--) {
+		while (times--) {
 			var i = Math.floor(Math.random() * a.length);
 			samples.push(a[i]);
 			a.splice(i, 1);
