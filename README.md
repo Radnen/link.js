@@ -224,6 +224,7 @@ These can be linked up like a chain, ex:
 var results = Link(array).map(add).filter(even).first().toArray();
 ```
 
+*	concat(array)     - lazily concat's the new array to the end of link's array.
 *	expand(|prop)     - expands Link to use inner arrays, or if prop is specified arrays in prop. 
 	*	expandInto(prop)
 	*	unroll()
@@ -281,8 +282,8 @@ var results = Link(Link(array).where(even).sample(5)).map(timesten).each(print);
 *	min(rank)        - returns the minimum element using a ranking function as a benchmark.
 *	none(fn)         - checks to see if all items do not satisfy the predicate ''fn''.
 *	reduce(fn, memo) - reduces the results, starting at memo, or if not, the first item.
-*	sample(num)      - selects a random element, up to ''num'' of them or once.
-	*	random(num)
+*	sample(num, uniq)- selects num random elements. Uniq is true by default, if false it may reselect items.
+	*	random(num, uniq)
 *	sort(fn)         - sorts the resulting list with given function, or uses JS default.
 *	toArray()        - returns an array.
 *	update(prop, v)  - changes the property value in the object to the value, best used with where.

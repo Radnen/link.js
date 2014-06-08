@@ -601,8 +601,11 @@ var Link = (function() {
 	}
 	
 	ExpandPoint.prototype.exec = function(item) {
-		var i = 0, l = item.length;
-		while (i < l) { this.next.exec(item[i]); i++; }
+		var i = 0, l = item.length, e = this.env, n = this.next;
+		if (e.take)
+			while (i < l && !e.stop) { n.exec(item[i]); i++; }
+		else
+			while (i < l) { n.exec(item[i]); i++; }
 	}
 	
 	function ExpandPropPoint(prop) {
@@ -886,6 +889,11 @@ var Link = (function() {
 		return this;
 	}
 	
+	function Concat(array) {
+		if (array instanceof Link) array = array.toArray();
+		return Link(this.toArray(), array);
+	}
+	
 	function Max(rank) {
 		var point = new MaxPoint(rank);
 		this.run(point);
@@ -953,15 +961,16 @@ var Link = (function() {
 		return a.splice(a.length - count);
 	}
 	
-	function Random(times) {
-		if (times === undefined) times = 1;
+	function Random(times, unique) {
+		if (!times) times = 1;
+		if (!unique) unique = true;
 		var a = this.toArray();
 		times = Math.min(times, a.length);
 		var samples = [];
 		while (times--) {
 			var i = Math.floor(Math.random() * a.length);
 			samples.push(a[i]);
-			a.splice(i, 1);
+			if (unique) a.splice(i, 1);
 		}
 		return samples;
 	}
@@ -1020,6 +1029,7 @@ var Link = (function() {
 		retarget  : Retarget,
 
 		accept    : Where,
+		concat    : Concat,
 		contains  : Contains,
 		count     : Count,
 		drop      : Skip,

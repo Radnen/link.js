@@ -188,7 +188,7 @@
 			
 			function test() {
 				// an association list:
-				var array = [{ buds: ["bob", "tom"], name: "sam" }, { buds: ["tom"], name: "bob" }, { buds: ["sally"], name: "tom" }];
+				/*var array = [{ buds: ["bob", "tom"], name: "sam" }, { buds: ["tom"], name: "bob" }, { buds: ["sally"], name: "tom" }];
 				Link(array).each(function(person) {
 					if (Link(person.buds).contains(["bob", "sally"])) console.log(person.name);
 				});
@@ -196,7 +196,8 @@
 				var abc = { a: ["A", "B", "C"], name: "abc" };
 				var cde = { a: ["C", "D", "E"], name: "cde" };
 				var cba = { a: ["C", "B", "A"], name: "cba" };
-				console.log(Link([abc, cde, cba]).has("a", function(i) { return i == "A"; }).pluck("name").toArray());
+				console.log(Link([abc, cde, cba]).has("a", function(i) { return i == "A"; }).pluck("name").toArray());*/
+				console.log(Link([1, 2, 3]).concat([4, 5, 6]).take(4).toArray());
 			}
 		</script>
 		
