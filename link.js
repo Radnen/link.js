@@ -961,16 +961,27 @@ var Link = (function() {
 		return a.splice(a.length - count);
 	}
 	
-	function Random(times, unique) {
+	function Sample(times) {
 		if (!times) times = 1;
-		if (!unique) unique = true;
 		var a = this.toArray();
 		times = Math.min(times, a.length);
 		var samples = [];
 		while (times--) {
 			var i = Math.floor(Math.random() * a.length);
 			samples.push(a[i]);
-			if (unique) a.splice(i, 1);
+			a.splice(i, 1);
+		}
+		return samples;
+	}
+
+	function Random(times) {
+		if (!times) times = 1;
+		var a = this.toArray();
+		times = Math.min(times, a.length);
+		var samples = [];
+		while (times--) {
+			var i = Math.floor(Math.random() * a.length);
+			samples.push(a[i]);
 		}
 		return samples;
 	}
@@ -1059,7 +1070,7 @@ var Link = (function() {
 		random    : Random,
 		reduce    : Reduce,
 		reject    : Reject,
-		sample    : Random,
+		sample    : Sample,
 		select    : Select,
 		size      : Length,
 		skip      : Skip,
