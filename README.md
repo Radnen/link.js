@@ -224,11 +224,11 @@ These can be linked up like a chain, ex:
 var results = Link(array).map(add).filter(even).first().toArray();
 ```
 
-*	concat(array)     - lazily concat's the new array to the end of link's array.
+*	concat(arr|link)  - lazily concat's the array (or link context) to the end of this context.
 *	expand(|prop)     - expands Link to use inner arrays, or if prop is specified arrays in prop. 
 	*	expandInto(prop)
 	*	unroll()
-*	filter(fn)        - perform a filter, using fn as the predicate.
+*	filter(fn)        - performs a filter, using fn as the predicate.
 	*	accept(fn)
 	*	where(fn)
 *	filterBy(name, v|a) - filters out objects whose named property does not match the value or array of values.
@@ -240,7 +240,6 @@ var results = Link(array).map(add).filter(even).first().toArray();
 *	has(p, v|fn)      - filters out objects whose inner arrays don't contain the value or matches the predicate.
 *	is(instance)      - filters out items that are not of the prototype.
 *	join(other, func) - joins the context array with 'other' based on the condition function.
-*	join(delim)       - joins the Link context, returning a string delimited with 'delim'.
 *	map(fn)           - perform a map operation with fn.
 *	pluck(prop)       - continues the chain using the object property named 'prop'.
 *	reject(fn)        - perform the opposite of filter.
@@ -254,7 +253,7 @@ var results = Link(array).map(add).filter(even).first().toArray();
 	*	typeof(type)
 *	uniq(test)        - filters the results to only unique items. May also use a uniqueness test on objects.
 	*	unique(test)
-*	zip(array)        - combines the contents of the array with the current elements.
+*	zip(arr|link)     - combines the contents of the array (or other link context) with the current elements.
 
 Non-Chainable:
 --------------
@@ -277,6 +276,7 @@ var results = Link(Link(array).where(even).sample(5)).map(timesten).each(print);
 *	groupBy(fn)      - returns an array of values grouped by the grouping function.
 *	indexOf(p|v)     - returns -1 if item p is not found, or prop p != v, or the index.
 *	invoke(m, args)  - runs the results, invoking the method named by ''m''.
+*	join(delim)       - joins the Link context, returning a string delimited with 'delim'.
 *	last()           - returns the last result.
 *	length()         - returns the overall length.
 	*	size()

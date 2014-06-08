@@ -916,7 +916,7 @@ var Link = (function() {
 	}
 	
 	function Concat(array) {
-		if (array instanceof Link) array = array.toArray();
+		if (array instanceof Chain) array = array.toArray();
 		return Link(this.toArray(), array);
 	}
 	
@@ -969,6 +969,7 @@ var Link = (function() {
 	}
 	
 	function Zip(array) {
+		if (array instanceof Chain) array = array.toArray();
 		this.pushPoint(new ZipPoint(array));
 		return this;
 	}
