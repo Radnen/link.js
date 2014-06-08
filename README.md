@@ -240,13 +240,15 @@ var results = Link(array).map(add).filter(even).first().toArray();
 *	has(p, v|fn)      - filters out objects whose inner arrays don't contain the value or matches the predicate.
 *	is(instance)      - filters out items that are not of the prototype.
 *	join(other, func) - joins the context array with 'other' based on the condition function.
+*	join(delim)       - joins the Link context, returning a string delimited with 'delim'.
 *	map(fn)           - perform a map operation with fn.
 *	pluck(prop)       - continues the chain using the object property named 'prop'.
 *	reject(fn)        - perform the opposite of filter.
+*	select(...)       - filters out props of all objects to only the listed ones.
 *	skip(num)         - skips first 'num' elements.
 	*	drop(num)
 *	slice(a, b)       - returns results between [a, b).
-*	select(...)       - filters out props of all objects to only the listed ones.
+*	splice(delim)     - for use on strings, cuts up a string and continues the link chain.
 *	take(n)           - takes the first n results.
 *	type(type)        - filters out items that are not of the type.
 	*	typeof(type)

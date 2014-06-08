@@ -729,7 +729,7 @@ var Link = (function() {
 			this.next.exec(this.word);
 			this.word = "";
 		}
-		else this.word += letter;
+		else this.word += ch;
 	}
 	
 	/** Functional Layer **/

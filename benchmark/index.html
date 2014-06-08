@@ -197,7 +197,7 @@
 				var cde = { a: ["C", "D", "E"], name: "cde" };
 				var cba = { a: ["C", "B", "A"], name: "cba" };
 				console.log(Link([abc, cde, cba]).has("a", function(i) { return i == "A"; }).pluck("name").toArray());*/
-				console.log(Link("top-trees-test").split("-").toArray());
+				console.log(Link("top-trees-test-trees-look-trees").split("-").take(4).filter(function(item) { return item == "trees"; }).toArray());
 			}
 		</script>
 		
