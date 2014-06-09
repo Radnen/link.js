@@ -1004,7 +1004,6 @@ var Link = (function() {
 	function Random(times) {
 		if (!times) times = 1;
 		var a = this.toArray();
-		times = Math.min(times, a.length);
 		var samples = [];
 		while (times--) {
 			var i = Math.floor(Math.random() * a.length);
