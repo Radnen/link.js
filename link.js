@@ -1059,6 +1059,17 @@ var Link = (function() {
 		return v;
 	}
 	
+	function Shuffle() {
+		var v = this.toArray();
+		for (var i = v.length - 1; i > 0; --i) {
+			var j = Math.floor(Math.random() * (i + 1));
+			var tmp = v[i];
+			v[i] = v[j];
+			v[j] = tmp;
+		}
+		return v;
+	}
+	
 	function Retarget(a) {
 		this.target = a;
 		return this;
@@ -1111,6 +1122,7 @@ var Link = (function() {
 		reject    : Reject,
 		sample    : Sample,
 		select    : Select,
+		shuffle   : Shuffle,
 		size      : Length,
 		skip      : Skip,
 		slice     : Slice,
