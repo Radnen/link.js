@@ -1,8 +1,8 @@
 /**
 * Script: Link.js
 * Written by: Andrew Helenius
-* Updated: Jun/08/2014
-* Version: 0.2.15
+* Updated: Feb/15/2015
+* Version: 0.2.16
 * Desc: Link.js is a very fast general-purpose functional programming library.
 		Still somewhat experimental, and still under construction.
 **/
@@ -703,18 +703,17 @@ var Link = (function() {
 			this.memo = this.func(this.memo, item);
 	}
 
-	function AllPoint(array) { // end point
+	function AllPoint() { // end point
 		this.next  = null;
 		this.env   = null;
-		this.i     = 0;
 		this.array = [];
 	}
 	
-	AllPoint.prototype.exec = function(item) { this.array[this.i++] = item; }
+	AllPoint.prototype.exec = function(item) { this.array[this.array.length] = item; }
 	
 	AllPoint.prototype.run = function(a) {
-		var i = 0, l = a.length, b = this.array;
-		while (i < l) b[i] = a[i++];
+		var i = a.length, b = this.array;
+		while (i--) { b[i] = a[i]; }
 	}
 	
 	function SplitPoint(delim) {
@@ -753,19 +752,24 @@ var Link = (function() {
 	}
 		
 	function Run(point) {
+		if (point) this.pushPoint(point);
+
+		// reset environment variables:
 		this.env.stop = false;
 		this.env.skip = 0;
-		if (point) this.pushPoint(point);
-		var start = this.points[0];
 		
-		// reset the points that store data between runs
-		for (var i = 0; i < this.points.length; ++i) {
+		// reset points that store data:
+		var i = this.points.length;
+		while (i--) {
 			var p = this.points[i];
 			if (p.reset) p.reset();
 		}
 
-		// kick-start points that have a runner tied to them:
+		// kick-start points with runners on them:
+		var start = this.points[0];
 		if (start.run) { start.run(this.target); }
+		
+		// run linked points:
 		else {
 			var a = this.target, l = a.length, i = 0, e = this.env;
 			if (e.take)
@@ -773,6 +777,8 @@ var Link = (function() {
 			else
 				while (i < l) start.exec(a[i++]);
 		}
+		
+		// remove end so as to reuse chain with different end points:
 		this.points.length--;
 	}
 	
