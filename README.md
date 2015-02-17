@@ -1,7 +1,7 @@
 Link.js
 =======
 
-Version: 0.2.16
+Version: 0.3.0
 
 Link.js is a very fast general-purpose functional programming library.
 
@@ -265,6 +265,8 @@ that return an array by putting them into another Link context. ex:
 var results = Link(Link(array).where(even).sample(5)).map(timesten).each(print);
 ```
 
+*	coalesce(prop)   - merges modified results back into the original array. 'prop' is an optional object property to use for destination (opposite of pluck).
+	*	fuse(prop)
 *	contains(o|p|a)  - returns true if something satisfies the predicate, or matches the object or anything in an array.
 	*	some(o|p|a)
 	*	exists(o|p|a)
@@ -285,6 +287,7 @@ var results = Link(Link(array).where(even).sample(5)).map(timesten).each(print);
 *	none(fn)         - checks to see if all items do not satisfy the predicate ''fn''.
 *	reduce(fn, memo) - reduces the results, starting at memo, or if not, the first item.
 *	sample(num)      - randomly selects 'num' elements, without repeats.
+*	swap(a, b)       - swaps the items at indices a and b.
 *	random(num)      - randomly selects 'num' elements, with repeats.
 *	sort(fn)         - sorts the resulting list with given function, or uses JS default.
 *	toArray()        - returns an array.
