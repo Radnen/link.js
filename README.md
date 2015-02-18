@@ -265,6 +265,7 @@ that return an array by putting them into another Link context. ex:
 var results = Link(Link(array).where(even).sample(5)).map(timesten).each(print);
 ```
 
+*	average(prop|fn) - takes the summation of numbers in the chain, or from a property or resolved from a function call.
 *	coalesce(prop)   - merges modified results back into the original array. 'prop' is an optional object property to use for destination (opposite of pluck).
 	*	fuse(prop)
 *	contains(o|p|a)  - returns true if something satisfies the predicate, or matches the object or anything in an array.
@@ -278,7 +279,7 @@ var results = Link(Link(array).where(even).sample(5)).map(timesten).each(print);
 *	groupBy(fn)      - returns an array of values grouped by the grouping function.
 *	indexOf(p|v)     - returns -1 if item p is not found, or prop p != v, or the index.
 *	invoke(m, args)  - runs the results, invoking the method named by ''m''.
-*	join(delim)       - joins the Link context, returning a string delimited with 'delim'.
+*	join(delim)      - joins the Link context, returning a string delimited with 'delim'.
 *	last()           - returns the last result.
 *	length()         - returns the overall length.
 	*	size()
@@ -290,6 +291,7 @@ var results = Link(Link(array).where(even).sample(5)).map(timesten).each(print);
 *	swap(a, b)       - swaps the items at indices a and b.
 *	random(num)      - randomly selects 'num' elements, with repeats.
 *	sort(fn)         - sorts the resulting list with given function, or uses JS default.
+*	sum(prop|fn)     - takes the summation of numbers in the chain, or from a property or resolved from a function call.
 *	toArray()        - returns an array.
 *	update(prop, v)  - changes the property value in the object to the value, best used with where.
 
@@ -298,8 +300,8 @@ Global
 
 *	Link.create(..., fill) - creates multi-dimension arrays filed with the fill. If the fill is a function it calls it each time.
 The functions takes n parameters, each the current index of the array.
-*	Link.range(value) - creates a single array filled with numbers [0, range).
-*	Link.alias(from, to) - realiases a method from one name to another (it doesn't overwrite, it creates).
+*	Link.range(value)      - creates a single array filled with numbers [0, range).
+*	Link.alias(from, to)   - re-aliases a method from one name to another (it doesn't overwrite, it creates).
 
 Planned Features
 ================

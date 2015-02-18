@@ -545,6 +545,76 @@ var Link = (function(undefined) {
 
 	function EachPoint(fn) { this.exec = fn; }
 	
+	function AveragePoint() { // end point
+		this.env   = null;
+		this.next  = null;
+		this.total = 0;
+		this.items = 0;
+	}
+	
+	AveragePoint.prototype.exec = function(item, i) {
+		this.total += item;
+		this.items++;
+	}
+
+	function AveragePropPoint(prop) { // end point
+		this.env   = null;
+		this.next  = null;
+		this.prop  = prop;
+		this.total = 0;
+		this.items = 0;
+	}
+	
+	AveragePropPoint.prototype.exec = function(item, i) {
+		this.total += item[this.prop];
+		this.items++;
+	}
+	
+	function AverageFuncPoint(func) { // end point
+		this.env   = null;
+		this.next  = null;
+		this.prop  = func;
+		this.total = 0;
+		this.items = 0;
+	}
+
+	AverageFuncPoint.prototype.exec = function(item, i) {
+		this.total += this.func(item, i);
+		this.items++;
+	}
+	
+	function SumPoint() { // end point
+		this.env   = null;
+		this.next  = null;
+		this.total = 0;
+	}
+	
+	SumPoint.prototype.exec = function(item, i) {
+		this.total += item;
+	}
+	
+	function SumPropPoint(prop) { // end point
+		this.env   = null;
+		this.next  = null;
+		this.prop  = prop;
+		this.total = 0;
+	}
+	
+	SumPropPoint.prototype.exec = function(item, i) {
+		this.total += item[this.prop];
+	}
+	
+	function SumFuncPoint(func) { // end point
+		this.env   = null;
+		this.next  = null;
+		this.prop  = func;
+		this.total = 0;
+	}
+
+	SumFuncPoint.prototype.exec = function(item, i) {
+		this.total += this.func(item, i);
+	}
+	
 	function MinPoint(rank) { // end point
 		this.next  = null;
 		this.env   = null;
@@ -911,10 +981,7 @@ var Link = (function(undefined) {
 	}
 		
 	function Where(propOrFn, value) {
-		if (value !== undefined) {
-			this.pushPoint(new FilterByPoint(propOrFn, value));
-			return this;
-		}
+		if (value !== undefined) { return this.filterBy(propOrFn, value); }
 		var last = this.points[this.points.length - 1];
 		if (last instanceof WherePoint)
 			this.replaceEnd(new Where2Point(last.func, propOrFn));
@@ -944,6 +1011,31 @@ var Link = (function(undefined) {
 	function Concat(array) {
 		if (array instanceof Chain) array = array.toArray();
 		return Link(this.toArray(), array);
+	}
+	
+	function Average(obj) {
+		var point = null;
+		if (typeof obj == "function")
+			point = new AverageFuncPoint(obj);
+		else if (typeof obj == "string")
+			point = new AveragePropPoint(obj);
+		else
+			point = new AveragePoint();
+		this.run(point);
+		if (point.items == 0) return 0;
+		return point.total / point.items;
+	}
+
+	function Sum(obj) {
+		var point = null;
+		if (typeof obj == "function")
+			point = new SumFuncPoint(obj);
+		else if (typeof obj == "string")
+			point = new SumPropPoint(obj);
+		else
+			point = new SumPoint();
+		this.run(point);
+		return point.total;
 	}
 	
 	function Max(rank) {
@@ -1128,6 +1220,7 @@ var Link = (function(undefined) {
 		retarget  : Retarget,
 
 		accept    : Where,
+		average   : Average,
 		coalesce  : Coalesce,
 		concat    : Concat,
 		contains  : Contains,
@@ -1169,6 +1262,7 @@ var Link = (function(undefined) {
 		some      : Contains,
 		sort      : Sort,
 		split     : Split,
+		sum       : Sum,
 		swap      : Swap,
 		take      : Take,
 		toArray   : ToArray,
