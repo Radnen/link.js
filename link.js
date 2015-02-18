@@ -168,7 +168,7 @@ var Link = (function(undefined) {
 	function ArrayJoinPoint(delim) { // end point
 		this.next  = null;
 		this.env   = null;
-		this.delim = delim;
+		this.delim = delim || "";
 		this.text  = "";
 	}
 	
@@ -718,11 +718,22 @@ var Link = (function(undefined) {
 	}
 	
 	function CoalescePoint() { // end point
-		this.env  = null;
+		this.env = null;
 	}
 	
 	CoalescePoint.prototype.exec = function(item, i) {
 		this.env.target[i] = item;
+	}
+	
+	function UnpluckPoint(prop) {
+		this.env  = null;
+		this.prop = prop;
+		this.next = null;
+	}
+	
+	UnpluckPoint.prototype.exec = function(item, i) {
+		this.env.target[i][this.prop] = item;
+		this.next.exec(this.env.target[i], i);
 	}
 	
 	function SplitPoint(delim) {
@@ -842,6 +853,11 @@ var Link = (function(undefined) {
 	
 	function Pluck(prop) {
 		this.pushPoint(new PluckPoint(prop));
+		return this;
+	}
+	
+	function Unpluck(prop) {
+		this.pushPoint(new UnpluckPoint(prop));
 		return this;
 	}
 	
@@ -1160,6 +1176,7 @@ var Link = (function(undefined) {
 		typeOf    : Type,
 		uniq      : Uniq,
 		unique    : Uniq,
+		unpluck   : Unpluck,
 		unroll    : Expand,
 		update    : Update,
 		where     : Where,
