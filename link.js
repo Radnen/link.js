@@ -1,7 +1,7 @@
 /**
 * Script: Link.js
 * Written by: Andrew Helenius
-* Updated: May/8/2015
+* Updated: May/11/2015
 * Version: 0.3.0
 * Desc: Link.js is a very fast general-purpose functional programming library.
 		Still somewhat experimental, and still under construction.
@@ -306,6 +306,14 @@ var Link = (function(undefined) {
 	ZipPoint.prototype.exec = function(item, i) { this.next.exec([item, array[this.i++]], i); }
 	
 	ZipPoint.prototype.reset = function() { this.i = 0; }
+	
+	function RemovePoint() { // endpoint
+		this.items = [];
+	}
+	
+	RemovePoint.prototype.exec = function(item, i) {
+		this.items.push(i);
+	}
 	
 	function GroupByPoint(groupFn, container) { // end point
 		this.next  = null;
@@ -1138,6 +1146,13 @@ var Link = (function(undefined) {
 		return this;
 	}
 	
+	function Remove() {
+		var point = new RemovePoint();
+		this.run(point);
+		var a = point.items, i = a.length;
+		while (i--) { this.target.splice(a[i], 1); }
+	}
+	
 	function Slice(a, b) {
 		if (a == 0) return this;
 		this.env.take = true;
@@ -1305,6 +1320,7 @@ var Link = (function(undefined) {
 		recurse   : Recurse,
 		reduce    : Reduce,
 		reject    : Reject,
+		remove    : Remove,
 		sample    : Sample,
 		select    : Select,
 		shuffle   : Shuffle,

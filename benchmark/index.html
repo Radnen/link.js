@@ -1,6 +1,72 @@
 <!DOCTYPE html>
 <html>
 	<head>
+	<style>
+		body { width: 66%; margin: 0 auto; }
+	
+		ul {
+			list-style-type: none;
+			padding: 0;
+			margin: 0;
+		}
+		
+		li {
+			width: 100%;
+			min-height: 32px;
+		}
+		
+		h1 {
+			font-family: sans-serif;
+			font-size: 1em;
+			font-weight: bold;
+			text-transform: uppercase;
+			margin: 10px 0;
+			letter-spacing: 4px;
+		}
+		
+		pre {
+			overflow: auto;
+			background-color: #CCC;
+			padding: 10px;
+			border: 1px solid #777;
+			margin-bottom: 25px;
+		}
+	
+		button {
+			cursor: pointer;
+			padding: 5px;
+			border: 1px solid #777;
+			width: 100px;
+			float: right;
+			color: #333;
+			background: #f2f6f8;
+			background: -moz-linear-gradient(top,  #f2f6f8 0%, #d8e1e7 50%, #b5c6d0 51%, #e0eff9 100%);
+			background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f2f6f8), color-stop(50%,#d8e1e7), color-stop(51%,#b5c6d0), color-stop(100%,#e0eff9));
+			background: -webkit-linear-gradient(top,  #f2f6f8 0%,#d8e1e7 50%,#b5c6d0 51%,#e0eff9 100%);
+			background: -o-linear-gradient(top,  #f2f6f8 0%,#d8e1e7 50%,#b5c6d0 51%,#e0eff9 100%);
+			background: -ms-linear-gradient(top,  #f2f6f8 0%,#d8e1e7 50%,#b5c6d0 51%,#e0eff9 100%);
+			background: linear-gradient(to bottom,  #f2f6f8 0%,#d8e1e7 50%,#b5c6d0 51%,#e0eff9 100%);
+			filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f2f6f8', endColorstr='#e0eff9',GradientType=0 );
+		}
+		
+		button:hover {
+			background: #dbdee0;
+			background: -moz-linear-gradient(top,  #dbdee0 0%, #d8e1e7 50%, #b5c6d0 51%, #b5c2c9 100%);
+			background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#dbdee0), color-stop(50%,#d8e1e7), color-stop(51%,#b5c6d0), color-stop(100%,#b5c2c9));
+			background: -webkit-linear-gradient(top,  #dbdee0 0%,#d8e1e7 50%,#b5c6d0 51%,#b5c2c9 100%);
+			background: -o-linear-gradient(top,  #dbdee0 0%,#d8e1e7 50%,#b5c6d0 51%,#b5c2c9 100%);
+			background: -ms-linear-gradient(top,  #dbdee0 0%,#d8e1e7 50%,#b5c6d0 51%,#b5c2c9 100%);
+			background: linear-gradient(to bottom,  #dbdee0 0%,#d8e1e7 50%,#b5c6d0 51%,#b5c2c9 100%);
+			filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#dbdee0', endColorstr='#b5c2c9',GradientType=0 );
+		}
+		
+		.group {
+			border: 1px solid #777;
+			padding: 5px;
+			margin-bottom: 10px;
+			border-radius: 4px;
+		}
+	</style>
 	<script type="text/javascript" src="suite.js"></script>
 	<script type="text/javascript" src="../link.js"></script>
 	<script type="text/javascript" src="lazy.js"></script>
@@ -201,24 +267,51 @@
 				console.log(Link([{ a: 1, b: "Hi" }, { a: 2, b: "Hello" }, { a: 3, b: "Bob" }, { a: 4, b: "World" }]).pluck("a").filter(even).take(2).unpluck("a").pluck("b").join(" "));
 			}
 		</script>
-		
-		<style>
-			li { width: 200px; height: 26px; list-style-type: none;	}
-			button { float: right; }
-		</style>
 	</head>
 	<body>
 		<p>Make sure the console is open to see the results!</p>
 		<p>Benchmarking against Link, Lazy and Lo-Dash, on:</p>
-		<ul>
-			<li>map-filter-map-each <button onclick="run1();">Run Test</button></li>
-			<li>filter-indexOf <button onclick="run2();">Run Test</button></li>
-			<li>filter-map-each <button onclick="run5();">Run Test</button></li>
-			<li>filter-each <button onclick="run4();">Run Test</button></li>
-			<li>filter-toArray <button onclick="run3();">Run Test</button></li>
-			<li>filter-by <button onclick="run6();">Run Test</button></li>
-			<li>pluck-each <button onclick="run7();">Run Test</button></li>
-			<li>test <button onclick="test();">Test Feature</button></li>
-		</ul>
+		<h1>Chaining</h1>
+		<div class="group">
+			<ul>
+				<li>
+					map-filter-map-each <button onclick="run1();">Run Test</button>
+					<pre>Link(array).map(add1).filter(even).map(add1).each(noop);</pre>
+				</li>
+				<li>
+					filter-indexOf <button onclick="run2();">Run Test</button>
+					<pre>Link(array).filter(even).indexOf(88);</pre>
+				</li>
+				<li>
+					filter-map-each <button onclick="run5();">Run Test</button>
+					<pre>Link(array).filter(even).map(add1).each(noop);</pre>
+				</li>
+				<li>
+					filter-each <button onclick="run4();">Run Test</button>
+					<pre>Link(array).filter(even).each(noop);</pre>
+				</li>
+				<li>
+					filter-toArray <button onclick="run3();">Run Test</button>
+					<pre>Link(array).filter(even).toArray();</pre>
+				</li>
+				<li>
+					filter-by <button onclick="run6();">Run Test</button>
+					<pre>Link(array).filterBy("test", "A").each(noop);</pre>
+				</li>
+				<li>
+					pluck-each <button onclick="run7();">Run Test</button>
+					<pre>Link(array).pluck("name").each(noop);</pre>
+				</li>
+			</ul>
+		</div>
+		<h1>Features</h1>
+		<div class="group">
+			<ul>
+				<li>
+					Test .join() <button onclick="test();">Test Feature</button>
+					<pre>Link([{ a: 1, b: "Hi" }, { a: 2, b: "Hello" }, { a: 3, b: "Bob" }, { a: 4, b: "World" }]).pluck("a").filter(even).take(2).unpluck("a").pluck("b").join(" ")</pre>
+				</li>
+			</ul>
+		</div>
 	</body>
 </html>
