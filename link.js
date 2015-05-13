@@ -583,6 +583,17 @@ var Link = (function(undefined) {
 
 	function EachPoint(fn) { this.exec = fn; }
 	
+	function ExecutePoint(fn) {
+		this.next = null;
+		this.env  = null;
+		this.func = fn;
+	}
+	
+	ExecutePoint.prototype.exec = function(item, i) {
+		this.func(item, i);
+		this.next.exec(item, i);
+	}
+	
 	function AveragePoint() { // end point
 		this.env   = null;
 		this.next  = null;
@@ -890,6 +901,11 @@ var Link = (function(undefined) {
 	
 	function Each(fn) {
 		this.run(new EachPoint(fn));
+	}
+	
+	function Execute(fn) {
+		this.pushPoint(new ExecutePoint(fn));
+		return this;
 	}
 		
 	function Run(point) {
@@ -1294,6 +1310,7 @@ var Link = (function(undefined) {
 		drop      : Skip,
 		each      : Each,
 		every     : Every,
+		execute   : Execute,
 		exists    : Contains,
 		expand    : Expand,
 		expandInto: Expand,
