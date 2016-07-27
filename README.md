@@ -1,7 +1,7 @@
 Link.js
 =======
 
-Version: 0.3.0
+Version: 0.4.0
 
 Link.js is a very fast general-purpose functional programming library.
 
@@ -215,6 +215,30 @@ existing features to something new. For example, you can decide to recast 'filte
 Link.alias('filter', 'include');
 ```
 
+Cross Products!
+---------------
+You can now iterate over multiple arrays by covering all of their permutations. Be warned it's an in-place operation.
+So you only get the results as they come. You can't do a backwards iteration, so if you are seeking a cross product at
+the end of the list, perhaps flip the two arrays.
+
+``` javascript
+var items1 = [1, 2];
+var items1 = [3, 4];
+
+// This:
+for (var i = 0; i < items1.length; ++i) {
+	for (var j = 0; j < items2.length; ++j) {
+		Print(items1[i] + items2[j]);
+	}
+}
+
+// Becomes:
+Link(items1).cross(items2).each(function(items, i) { Print(items[0] + items[1]); });
+
+// Expected Output:
+// 4, 5, 5, 6
+```
+
 Chainable:
 ----------
 
@@ -225,6 +249,7 @@ var results = Link(array).map(add).filter(even).first().toArray();
 ```
 
 *	concat(arr|link)  - lazily concat's the array (or link context) to the end of this context.
+*	cross(arr|link)   - does a set cross product on the input array or link context.
 *	expand(|prop)     - expands Link to use inner arrays, or if prop is specified arrays in prop. 
 	*	expandInto(prop)
 	*	unroll()
@@ -308,5 +333,4 @@ Planned Features
 
 - Create an official API page (perhaps in the wiki)
 - Add more features common to Lazy/Underscore
-- Find a decent way to generate 'runners'
 - Make it web friendlier (Node support, etc)
