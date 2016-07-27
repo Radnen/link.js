@@ -723,7 +723,7 @@ var Link = (function(undefined) {
 			var arr = [];
 			for (var j = 0, ji = item.length; j < ji; ++j) arr[j] = item[j];
 			arr[arr.length] = o[i];
-			next.exec(arr, n + i);
+			next.exec(arr, i);
 		}
 	};
 
