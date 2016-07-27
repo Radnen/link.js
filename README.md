@@ -223,17 +223,19 @@ the end of the list, perhaps flip the two arrays.
 
 ``` javascript
 var items1 = [1, 2];
-var items1 = [3, 4];
+var items2 = [3, 4];
 
 // This:
+var n = 0;
 for (var i = 0; i < items1.length; ++i) {
 	for (var j = 0; j < items2.length; ++j) {
-		Print(items1[i] + items2[j]);
+		Print("At #" + n + ": " + (items1[i] + items2[j]));
+		n++;
 	}
 }
 
 // Becomes:
-Link(items1).cross(items2).each(function(items, i) { Print(items[0] + items[1]); });
+Link(items1).cross(items2).each(function(items, i) { Print("At #" + i + ": " + (items[0] + items[1])); });
 
 // Expected Output:
 // 4, 5, 5, 6
