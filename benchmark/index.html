@@ -82,7 +82,7 @@
 			function toArray(a, b) { a.push(b); return a; };
 			
 			function run1() {
-				var array = Link.range(100000);
+				var array = Link.range(1000000);
 
 				var suite = new Suite;
 				suite.add("Link map-filter-map-each", function() {
@@ -252,19 +252,25 @@
 				.run();
 			}
 			
-			function test() {
-				// an association list:
-				/*var array = [{ buds: ["bob", "tom"], name: "sam" }, { buds: ["tom"], name: "bob" }, { buds: ["sally"], name: "tom" }];
-				Link(array).each(function(person) {
-					if (Link(person.buds).contains(["bob", "sally"])) console.log(person.name);
-				});
+			function run8() {
+				var a1 = Link.create(100, "A");
+				var a2 = Link.create(100, "B");
+				var a3 = Link.create(100, "C");
 				
-				var abc = { a: ["A", "B", "C"], name: "abc" };
-				var cde = { a: ["C", "D", "E"], name: "cde" };
-				var cba = { a: ["C", "B", "A"], name: "cba" };
-				console.log(Link([abc, cde, cba]).has("a", function(i) { return i == "A"; }).pluck("name").toArray());*/
-				//console.log(Link("top-trees-test-trees-look-trees").split("-").take(4).filter(function(item) { return item == "trees"; }).toArray());
-				console.log(Link([{ a: 1, b: "Hi" }, { a: 2, b: "Hello" }, { a: 3, b: "Bob" }, { a: 4, b: "World" }]).pluck("a").filter(even).take(2).unpluck("a").pluck("b").join(" "));
+				var suite = new Suite;
+				suite.add("Link cross", function() {
+					Link(a1).cross(a2).cross(a3).each(noop);
+				}).on("cycle", function(event) {
+					console.log(String(event.target));
+				}).on("complete", function() {
+					console.log("Fastest is " + this.getFastest());
+				}).run();
+			}
+			
+			function test() {
+				var items1 = [{ x: 0, y: 0 }, { x: 1, y: 1 }];
+				var items2 = [{ x: 0, y: 1 }, { x: 1, y: 0 }];
+				Link(items1).cross(items2).each(function(item) { console.log(item); });
 			}
 		</script>
 	</head>
@@ -302,6 +308,10 @@
 					pluck-each <button onclick="run7();">Run Test</button>
 					<pre>Link(array).pluck("name").each(noop);</pre>
 				</li>
+				<li>
+					cross-cross-each <button onclick="run8();">Run Test</button>
+					<pre>Link(a1).cross(a2).cross(a3).each(noop);</pre>
+				</li>
 			</ul>
 		</div>
 		<h1>Features</h1>
@@ -309,7 +319,7 @@
 			<ul>
 				<li>
 					Test .join() <button onclick="test();">Test Feature</button>
-					<pre>Link([{ a: 1, b: "Hi" }, { a: 2, b: "Hello" }, { a: 3, b: "Bob" }, { a: 4, b: "World" }]).pluck("a").filter(even).take(2).unpluck("a").pluck("b").join(" ")</pre>
+					<pre>Link(items1).cross(items2).each(function(item) { console.log(item); });</pre>
 				</li>
 			</ul>
 		</div>
