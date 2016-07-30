@@ -1,30 +1,36 @@
 Link.js
 =======
 
-Version: 0.4.0
+Version: 0.4.1
 
 Link.js is a very fast general-purpose functional programming library.
 
-Link uses Lazy execution (also called deferred execution) to produce its results.
-That means things aren't being calculated until only when you need them. This offers
-a large speed boost and a shallow memory footprint.
+Ever wondered if you could just stop writing for-loop boilerplate? You know, stuff like:
+``` javascript
+for var (i = 0; i < arrya.length; ++i) {
+    var item = array[i];
+    if (i > 4) {
+    	console.log(i + ": " + item.name);
+    }
+}
+```
 
-How does Link.js compare to similar libraries? See /benchmark for tests. It is already much
-faster than Lazy and Lo-Dash, which are the two main libraries tested against. You can run the
-benchmarks yourself by visiting: http://radnen.tengudev.com/link-benchmark/
+Well, with link, your loops have never before been more easier to write!
 
-It also has some built-in optimizations that leverage your work to try and do two things
-at once so-to-speak (see: how it works).
+``` javascript
+var link = Link(array).where(function(item, i) { return i > 4; });
+link.each(function(item, i) { console.log(i + ": " + item.name); });
+```
 
-Link is still a work in progress. It's API is already mostly usable, but still under construction.
+There is little speed decrease with this library. What's better, depending on the amount of work you are doing in a for loop, this library could in fact be very fast. Faster than your own hand-written loops. Why? Deferred execution. It will only do work when it knows it absolutely can do it, therefore any filtering occurs very fast. And since you are not writing loops by hand, there are far fewer room for errors. All you need to worry about is the logic.
+
+For ES6, you may use lamdas in place for explicit anonymous functions, thus shortening your code.
+``` javascript
+Link(array).where((item, i) => i > 4).each((item, i) => console.log(i + ": " + item.name));
+```
 
 Examples
 ========
-
-Link's main purpose is to do work on arrays, whether it is arrays of objects or primitives. When you want to do
-some kind of filtering, you may be tempted to write out the for loop each time you want to do something different.
-In the case of libraries like Link.js, Lazy.js or Underscore.js, you can do those filterings and mappings more
-efficiently by lifting all of the heavy for-loop work for you.
 
 Grabbing all even numbers:
 ``` javascript
@@ -72,16 +78,7 @@ Link([ones, ones, zero, other, zero, other, ones, ones]).uniq().toArray();
 // produces: [ones, zero, other]
 ```
 
-Ok... so Here's a lot of work:
-``` javascript
-Link(numbers).map(addRandom).filter(even).unique().each(function(item) { console.log(item); });
-```
-
-To write the above in a for loop, you may write a lot more code than you need. For example, finding the unique element
-in the list would need a special library or is tedious each time you write a for loop that uses such a thing. Then, if
-you did write the for loop there is a chance you got something wrong. ;)
-
-You can also use contains and filterBy on multiple values for one-many relationships. It does an or-based check:
+You can also use contains and filterBy on multiple values for one-to-many relationships. It does an or-based check:
 ```
 var people = [{ name: "bob", age: 25 }, { name: "sally", age: 24 }, { name: "steve", age: 21 }]
 Link(people).filterBy("name", ["bob", "sally"]).pluck("age").toArray() // [25, 24];
@@ -199,7 +196,7 @@ a database without resorting to a DBMS.
 
 In this example we get the grades of all people whose name starts with 'b':
 ``` javascript
-Link(grades_table).where(function(item) { return item.name[0] == 'b'; }).select('name', 'grade').toArray();
+Link(grades_table).where(function(item) { return item.name.startsWith('b'); }).select('name', 'grade').toArray();
 ```
 Since Link is not a database implementation, the only caveat is that you should think of your SQL-like
 queries backwards. Do the 'selects' last, and the 'wheres' first. Here is a join (only inner so far):
@@ -226,19 +223,14 @@ var items1 = [1, 2];
 var items2 = [3, 4];
 
 // This:
-var n = 0;
 for (var i = 0; i < items1.length; ++i) {
 	for (var j = 0; j < items2.length; ++j) {
-		Print("At #" + n + ": " + (items1[i] + items2[j]));
-		n++;
+		Print("At #" + j + ": " + (items1[i] + items2[j]));
 	}
 }
 
 // Becomes:
 Link(items1).cross(items2).each(function(items, i) { Print("At #" + i + ": " + (items[0] + items[1])); });
-
-// Expected Output:
-// 4, 5, 5, 6
 ```
 
 Chainable:
@@ -329,10 +321,3 @@ Global
 The functions takes n parameters, each the current index of the array.
 *	Link.range(value)      - creates a single array filled with numbers [0, range).
 *	Link.alias(from, to)   - re-aliases a method from one name to another (it doesn't overwrite, it creates).
-
-Planned Features
-================
-
-- Create an official API page (perhaps in the wiki)
-- Add more features common to Lazy/Underscore
-- Make it web friendlier (Node support, etc)
