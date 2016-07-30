@@ -7,7 +7,7 @@ Link.js is a very fast general-purpose functional programming library.
 
 Ever wondered if you could just stop writing for-loop boilerplate? You know, stuff like:
 ``` javascript
-for var (i = 0; i < arrya.length; ++i) {
+for var (i = 0; i < array.length; ++i) {
     var item = array[i];
     if (i > 4) {
     	console.log(i + ": " + item.name);
@@ -22,9 +22,9 @@ var link = Link(array).where(function(item, i) { return i > 4; });
 link.each(function(item, i) { console.log(i + ": " + item.name); });
 ```
 
-There is little speed decrease with this library. What's better, depending on the amount of work you are doing in a for loop, this library could in fact be very fast. Faster than your own hand-written loops. Why? Deferred execution. It will only do work when it knows it absolutely can do it, therefore any filtering occurs very fast. And since you are not writing loops by hand, there are far fewer room for errors. All you need to worry about is the logic.
+There is little speed decrease with this library, despite moving your logic to anonymous functions. What's better, depending on the amount of work you are doing in a for loop, this library could in fact be very fast. Faster than your own hand-written loops. Why? Deferred execution. It will only do work when it knows it can absolutely do it, therefore any filtering occurs very fast. And since you are not writing loops by hand, there is little room for errors. All you need to worry about is the logic you write.
 
-For ES6, you may use lamdas in place for explicit anonymous functions, thus shortening your code.
+For ES6, you may use lamdas (arrow functions) in place for explicit anonymous functions, thus shortening your code.
 ``` javascript
 Link(array).where((item, i) => i > 4).each((item, i) => console.log(i + ": " + item.name));
 ```
