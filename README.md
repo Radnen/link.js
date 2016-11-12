@@ -1,7 +1,7 @@
 Link.js
 =======
 
-Version: 0.4.1
+Version: 0.4.2
 
 Link.js is a very fast general-purpose functional programming library.
 
@@ -259,6 +259,7 @@ var results = Link(array).map(add).filter(even).first().toArray();
 *	has(p, v|fn)      - filters out objects whose inner arrays don't contain the value or matches the predicate.
 *	is(instance)      - filters out items that are not of the prototype.
 *	join(other, func) - joins the context array with 'other' based on the condition function.
+*	keys()            - unrolls the array, going through each object's keys instead.
 *	map(fn)           - perform a map operation with fn.
 *	pluck(prop)       - continues the chain using the object property named 'prop'.
 *	reject(fn)        - perform the opposite of filter.
@@ -292,6 +293,7 @@ var results = Link(Link(array).where(even).sample(5)).map(timesten).each(print);
 	*	exists(o|p|a)
 *	count(p)         - returns the overall number of times the predicate ''p'' was satisfied.
 *	each(fn)         - runs the results through the given function.
+	*	foreach(fn)
 *	every(fn)        - checks to see if all items satisfy the predicate.
 *	first(|fn)       - returns the first item, or the first that passes ''fn''.
 *	get(num)         - tries to get the indexed item.
